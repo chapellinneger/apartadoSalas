@@ -18,7 +18,7 @@ class clase_generica {
     private $host = 'localhost';
     //http://localhost/phpmyadmin
     private $port = '3306';
-    private $nombre_bd = 'pruebasistemainternobienesnac';
+    private $nombre_bd = 'reserva_salas_nueva';
     private $usua = 'root';
     private $clave = 'root';
     private $connec;
