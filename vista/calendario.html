@@ -24,6 +24,7 @@
 		const eventos = [];
 		
 		
+		
 		$.post("../controlador/apartadoSala_controller.php",{'accion':2}, function(data){
 			for(var x=0; x < data.res.length; x++){
 				var fecha = data.res[x]['hora_ini'].replace(' ','T')
@@ -33,7 +34,8 @@
 								title: data.res[x]['titulo_curso'],
 								start: new Date(fecha),
 								allDay: false,
-								className: 'info'
+								className: 'important',
+								//url: 'http://localhost/apartadoSalas/vista/calendario.html#myModal',
 							},
 							true // make the event "stick"
 						);
@@ -41,7 +43,6 @@
 			}
 		},'json');
 		
-		console.log(eventos);
 		
 		/*  className colors
 		
@@ -114,10 +115,18 @@
 			selectHelper: true,
 			select: function(start, end, allDay) {
 				//var title = prompt('Titulo de prueba Jorge:');
+				$('#tituloEvento').val('');
+				$('#descripEvento').val('');
+				$('#tipoEvento').val('');
+				$('#salaEvento').val('');
+				$('#horaini').val('');
+				$('#horafin').val('');
+				$('#id_curso').val('');
 				$('#myModal').modal({
 						show: 'true'
 				});
-				$('#guadar').on('click',function(){
+				
+				$('#guadar').on("click",function(){
 					var array_insert = {};
 					var title = $('#tituloEvento').val();
 					var descripcion = $('#descripEvento').val();
@@ -134,8 +143,11 @@
 					var fin = new Date(fin_format);
 					var fin_format_env = formattedDate(fin,hora_fin[0],minuto_fin[0]);
 					
+					var id = 0;
 					
-					
+					if($('#id_curso').val() != ''){
+						id = $('#id_curso').val();
+					}
 					
 					if (title != '') {
 						calendar.fullCalendar('renderEvent',
@@ -148,6 +160,7 @@
 							true // make the event "stick"
 						);
 						array_insert = {
+							'id_curso': id,
 							'accion':0,
 							'titulo':title,
 							'descripcion':descripcion,
@@ -165,10 +178,12 @@
 							
 						},'json');
 						title = '';
+						location.reload();
 					}
 					calendar.fullCalendar('unselect');
 					$('#myModal').modal('hide');
 				});
+				
 			},
 			droppable: true, // this allows things to be dropped onto the calendar !!!
 			drop: function(date, allDay) { // this function is called when something is dropped
@@ -246,6 +261,88 @@
 		
 		
 	});
+	
+	var editar = function(id){
+		$.post("../controlador/apartadoSala_controller.php",
+				{'accion':3,'id':id},
+				function(data){
+					$('#tituloEvento').val(data.res[0]['titulo_curso']);
+					$('#descripEvento').val(data.res[0]['descrip_curso']);
+					$('#tipoEvento').val(data.res[0]['id_tipo_curso']);
+					$('#salaEvento').val(data.res[0]['id_sala']);
+					$('#horaini').val(data.res[0]['hora_ini']);
+					$('#horafin').val(data.res[0]['hora_fin']);
+					$('#id_curso').val(data.res[0]['id_curso']);
+				},'json');
+
+		$('#myModal').modal({
+						show: 'true'
+					});
+		$('#guadar').on("click",function(){
+					var array_update = {};
+					var title = $('#tituloEvento').val();
+					var descripcion = $('#descripEvento').val();
+					var tipoEvento = $('#tipoEvento').val();
+					var salaEvento = $('#salaEvento').val();
+					var hora_init = $('#horaini').val().split(":");
+					var minuto_init = hora_init[1].split(" ");
+					var ini_format = start.setHours(parseInt(hora_init[0]),parseInt(minuto_init[0]));
+					var inicio = new Date(ini_format);
+					var ini_format_env = formattedDate(inicio,hora_init[0],minuto_init[0]);
+					var hora_fin = $('#horafin').val().split(":");
+					var minuto_fin = hora_fin[1].split(" ");
+					var fin_format = end.setHours(parseInt(hora_fin[0]),parseInt(minuto_fin[0]));
+					var fin = new Date(fin_format);
+					var fin_format_env = formattedDate(fin,hora_fin[0],minuto_fin[0]);
+					
+					var id = 0;
+					
+					if($('#id_curso').val() != ''){
+						id = $('#id_curso').val();
+					}
+					
+					if (title != '') {
+						calendar.fullCalendar('renderEvent',
+							{
+								title: title,
+								start: inicio,
+								end: fin,
+								allDay: allDay
+							},
+							true // make the event "stick"
+						);
+						array_update = {
+							'id_curso': id,
+							'accion':0,
+							'titulo':title,
+							'descripcion':descripcion,
+							'tipo_evento':tipoEvento,
+							'sala_evento':salaEvento,
+							'hora_inicio':ini_format_env,
+							'hora_fin':fin_format_env
+						}
+						$.post( "../controlador/apartadoSala_controller.php",array_insert, function( data ) {
+							if(data.cod){
+								alert(data.mensaje );
+							}	
+						},'json');
+						title = '';
+						location.reload();
+					}
+					calendar.fullCalendar('unselect');
+					$('#myModal').modal('hide');
+				});
+			
+	}
+	
+	var eliminar = function(id){
+		$.post("../controlador/apartadoSala_controller.php",
+				{'accion':4,'id':id},
+				function(data){
+					alert(data.mensaje);
+				},'json');
+		location.reload();
+	}
 
 </script>
 
@@ -270,6 +367,7 @@
 
 		  return `${year}-${month}-${day} ${h}:${m}:00`;
 	}
+	
 </script>
 <style>
 
@@ -362,6 +460,7 @@ box-shadow: 0px 0px 21px 2px rgba(0,0,0,0.18);
 			<div class="row">
 				<div class="form-group">
 					<div class="col-sm-12">
+					  <input type="hidden" name="id_curso" id="id_curso"/>
 					  <label for="tituloEvento">Titulo:</label>
 					  <input type="input" class="form-control" style="text-transform:uppercase;" name="tituloEvento" id="tituloEvento"/>
 					</div>

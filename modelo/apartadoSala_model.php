@@ -67,5 +67,27 @@ class apartadoSala_model  extends clase_generica{
 		$result = $datos_generico->ConsultaG($sql);
 		return $result;
 	}
+	
+	function consulta_curso_id($id){
+		$datos_generico = new clase_generica();
+		$sql = "SELECT * FROM reserva_salas_nueva.curso WHERE id_curso = $id";
+		//echo $sql;
+		$result = $datos_generico->ConsultaG($sql);
+		return $result;
+	}
+	
+	function eliminar_curso($id){
+		$datos_generico = new clase_generica();
+		$sql = "DELETE FROM reserva_salas_nueva.curso WHERE id_curso = $id;";
+		//echo $sql;
+		$result = $datos_generico->ConsultaG($sql);
+		if($result){
+			return true;
+	                //echo 'paso bien';
+		}else {
+			return false;
+			//echo 'paso mal';
+		}
+	}
 
 }

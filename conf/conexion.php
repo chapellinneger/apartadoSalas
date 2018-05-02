@@ -49,7 +49,7 @@ class BaseDeDato {
 	    //echo $Resultado->num_rows;
 	    //$rows = $Resultado->fetch_array(MYSQLI_ASSOC);
 	    $substr = substr($Consulta,0, 6);
-	    if ($substr == 'INSERT' || $substr == 'UPDATE'){
+	    if ($substr == 'INSERT' || $substr == 'UPDATE' || $substr == 'DELETE'){
 		$res = $Valor->insert_id;
 		//echo $res;
 		if(!$res){

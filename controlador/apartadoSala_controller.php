@@ -13,23 +13,42 @@ if($accion==0){
 	$tipo_envento = $_POST['tipo_evento'];
 	$hora_inicio = $_POST['hora_inicio'];
 	$hora_fin = $_POST['hora_fin'];
-	
+	$id_curso = $_POST['id_curso'];
 	$cod = false;
 	
-	$array_insert = [
-		'titulo_curso' => $titulo,
-		'descrip_curso' => $descripcion,
-		'id_sala' => $sala_evento,
-		'id_tipo_curso' => $tipo_envento,
-		'hora_ini' => $hora_inicio,
-		'hora_fin' => $hora_fin
-	];
+	if($id_curso == 0){
+		$array_insert = [
+			'titulo_curso' => $titulo,
+			'descrip_curso' => $descripcion,
+			'id_sala' => $sala_evento,
+			'id_tipo_curso' => $tipo_envento,
+			'hora_ini' => $hora_inicio,
+			'hora_fin' => $hora_fin
+		];
 	
-	$resultado = $apartadoSala_model->insertar_datos(
+		$resultado = $apartadoSala_model->insertar_datos(
 										'reserva_salas_nueva.curso',
 										$array_insert,
 										';'
 									   );
+	}else{
+		$array_update = [
+			'titulo_curso' => $titulo,
+			'descrip_curso' => $descripcion,
+			'id_sala' => $sala_evento,
+			'id_tipo_curso' => $tipo_envento,
+			'hora_ini' => $hora_inicio,
+			'hora_fin' => $hora_fin
+		];
+		
+		$resultado = $apartadoSala_model->update_datos(
+										'reserva_salas_nueva.curso',
+										$array_update,
+										' id_curso = '.$id_curso
+									   );
+	
+	}
+	
 	if ($resultado){
 		$cod = true;
 		$mensaje = 'Dato Cargado Corectamente !!!';
@@ -63,6 +82,35 @@ if($accion == 2){
 	$response = array(
 		"res" => $resultado
 	);
+	echo json_encode($response);//retorna el areglo $response
+	die();
+}
+
+if($accion == 3){
+	
+	$id = $_POST['id'];
+	$resultado = $apartadoSala_model->consulta_curso_id($id);
+	$response = array(
+		"res" => $resultado
+	);
+	echo json_encode($response);//retorna el areglo $response
+	die();
+}
+
+if($accion == 4){
+	
+	$id = $_POST['id'];
+	$resultado = $apartadoSala_model->eliminar_curso($id);
+	if($resultado){
+		$response = array(
+		"mensaje" => "Datos eliminado correctamente!!!"
+		);
+	}else{
+		$response = array(
+		"mensaje" => "Datos no fueron eliminados!!!"
+		);
+	}
+
 	echo json_encode($response);//retorna el areglo $response
 	die();
 }

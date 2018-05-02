@@ -3969,6 +3969,10 @@ function AgendaEventRenderer() {
 		if (seg.isEnd) {
 			classes.push('fc-event-end');
 		}
+		//jorge Rengifo
+		if (event.id){
+			classes.push('fc-event-id');
+		}
 		classes = classes.concat(event.className);
 		if (event.source) {
 			classes = classes.concat(event.source.className || []);
@@ -5324,6 +5328,10 @@ function DayEventRenderer() {
 		if (segment.isEnd) {
 			classNames.push('fc-event-end');
 		}
+		//jorge Rengifo
+		if (event.id){
+			classNames.push('fc-event-id');
+		}
 		// use the event's configured classNames
 		// guaranteed to be an array via `normalizeEvent`
 		classNames = classNames.concat(event.className);
@@ -5357,12 +5365,14 @@ function DayEventRenderer() {
 				htmlEscape(
 					formatDates(event.start, event.end, opt('timeFormat'))
 				) +
-				"</span>";
+				"m&nbsp;</span>";
 		}
 		html +=
 			"<span class='fc-event-title'>" +
 			htmlEscape(event.title || '') +
 			"</span>" +
+			"<span onclick='editar("+event.id+")' class=\"glyphicon\">&#x270f;</span>"+
+			"<span onclick='eliminar("+event.id+")' class=\"glyphicon\">&#xe014;</span>"+
 			"</div>";
 		if (segment.isEnd && isEventResizable(event)) {
 			html +=
@@ -5648,6 +5658,7 @@ function DayEventRenderer() {
 	function draggableDayEvent(event, eventElement) {
 		var hoverListener = getHoverListener();
 		var dayDelta;
+		if (eventElement.draggable != undefined) {
 		eventElement.draggable({
 			delay: 50,
 			opacity: opt('dragOpacity'),
@@ -5683,6 +5694,7 @@ function DayEventRenderer() {
 				}
 			}
 		});
+	  }
 	}
 
 	
