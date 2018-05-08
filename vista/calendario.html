@@ -22,10 +22,22 @@
 		var m = date.getMonth();
 		var y = date.getFullYear();
 		const eventos = [];
-		
-		
-		
-		$.post("../controlador/apartadoSala_controller.php",{'accion':2}, function(data){
+
+		$.post( "../controlador/apartadoSala_controller.php",{'accion':1}, function( data ) {
+			for(var i=0; i < data.res.length; i++){
+				$('#salaEvento').append('<option value="'+data.res[i]['id_sala']+'">'+data.res[i]['descrip_sala']+'</option>');
+				$('#sala').append('<option value="'+data.res[i]['id_sala']+'">'+data.res[i]['descrip_sala']+'</option>');
+			}
+
+			for(var j=0; j < data.res2.length; j++){
+				$('#tipoEvento').append('<option value="'+data.res2[j]['id_tipo_curso']+'">'+data.res2[j]['descrip_tipo_curso']+'</option>');
+			}
+
+		},'json');
+
+		var id_sala = $('#sala').val();
+		$.post("../controlador/apartadoSala_controller.php",{'accion':2,'id_sala':id_sala},
+		 function(data){
 			for(var x=0; x < data.res.length; x++){
 				var fecha = data.res[x]['hora_ini'].replace(' ','T')
 				calendar.fullCalendar('renderEvent',
@@ -39,55 +51,69 @@
 							},
 							true // make the event "stick"
 						);
-				
+
 			}
 		},'json');
-		
-		
+
+		$('#sala').on('change',function(){
+			var id = $('#sala').val();
+			calendar.fullCalendar('removeEvents');
+			$.post("../controlador/apartadoSala_controller.php",{'accion':2,'id_sala':id},
+			 function(data){
+				for(var x=0; x < data.res.length; x++){
+					var fecha = data.res[x]['hora_ini'].replace(' ','T');
+					calendar.fullCalendar('renderEvent',
+								{
+									id: data.res[x]['id_curso'],
+									title: data.res[x]['titulo_curso'],
+									start: new Date(fecha),
+									allDay: false,
+									className: 'important',
+								},
+								true // make the event "stick"
+							);
+				}
+
+			},'json');
+
+		});
+
+
 		/*  className colors
-		
+
 		className: default(transparent), important(red), chill(pink), success(green), info(blue)
-		
-		*/		
-		
-		  
+
+		*/
+
+
 		/* initialize the external events
 		-----------------------------------------------------------------*/
-		
-		$.post( "../controlador/apartadoSala_controller.php",{'accion':1}, function( data ) {
-				for(var i=0; i < data.res.length; i++){
-					$('#salaEvento').append('<option value="'+data.res[i]['id_sala']+'">'+data.res[i]['descrip_sala']+'</option>');
-				}
-				
-				for(var j=0; j < data.res2.length; j++){
-					$('#tipoEvento').append('<option value="'+data.res2[j]['id_tipo_curso']+'">'+data.res2[j]['descrip_tipo_curso']+'</option>');
-				}
-		},'json');
-	
+
+
 		$('#external-events div.external-event').each(function() {
-		
+
 			// create an Event Object (http://arshaw.com/fullcalendar/docs/event_data/Event_Object/)
 			// it doesn't need to have a start or end
 			var eventObject = {
 				title: $.trim($(this).text()) // use the element's text as the event title
 			};
-			
+
 			// store the Event Object in the DOM element so we can get to it later
 			$(this).data('eventObject', eventObject);
-			
+
 			// make the event draggable using jQuery UI
 			$(this).draggable({
 				zIndex: 999,
 				revert: true,      // will cause the event to go back to its
 				revertDuration: 0  //  original position after the drag
 			});
-			
+
 		});
-	
-	
+
+
 		/* initialize the calendar
 		-----------------------------------------------------------------*/
-		
+
 		var calendar =  $('#calendar').fullCalendar({
 			header: {
 				left: 'title',
@@ -98,7 +124,7 @@
 			firstDay: 1, //  1(Monday) this can be changed to 0(Sunday) for the USA system
 			selectable: true,
 			defaultView: 'month',
-			
+
 			axisFormat: 'h:mm',
 			columnFormat: {
                 month: 'ddd',    // Mon
@@ -125,7 +151,7 @@
 				$('#myModal').modal({
 						show: 'true'
 				});
-				
+
 				$('#guadar').on("click",function(){
 					var array_insert = {};
 					var title = $('#tituloEvento').val();
@@ -142,13 +168,13 @@
 					var fin_format = end.setHours(parseInt(hora_fin[0]),parseInt(minuto_fin[0]));
 					var fin = new Date(fin_format);
 					var fin_format_env = formattedDate(fin,hora_fin[0],minuto_fin[0]);
-					
+
 					var id = 0;
-					
+
 					if($('#id_curso').val() != ''){
 						id = $('#id_curso').val();
 					}
-					
+
 					if (title != '') {
 						calendar.fullCalendar('renderEvent',
 							{
@@ -175,7 +201,7 @@
 								console.log(data.res);
 								console.log(calendar);
 							}
-							
+
 						},'json');
 						title = '';
 						location.reload();
@@ -183,33 +209,33 @@
 					calendar.fullCalendar('unselect');
 					$('#myModal').modal('hide');
 				});
-				
+
 			},
 			droppable: true, // this allows things to be dropped onto the calendar !!!
 			drop: function(date, allDay) { // this function is called when something is dropped
-			
+
 				// retrieve the dropped element's stored Event Object
 				var originalEventObject = $(this).data('eventObject');
-				
+
 				// we need to copy it, so that multiple events don't have a reference to the same object
 				var copiedEventObject = $.extend({}, originalEventObject);
-				
+
 				// assign it the date that was reported
 				copiedEventObject.start = date;
 				copiedEventObject.allDay = allDay;
-				
+
 				// render the event on the calendar
 				// the last `true` argument determines if the event "sticks" (http://arshaw.com/fullcalendar/docs/event_rendering/renderEvent/)
 				$('#calendar').fullCalendar('renderEvent', copiedEventObject, true);
-				
+
 				// is the "remove after drop" checkbox checked?
 				if ($('#drop-remove').is(':checked')) {
 					// if so, remove the element from the "Draggable Events" list
 					$(this).remove();
 				}
-				
+
 			},
-			
+
 			events: [
 			    /* Aqui se ponen los datos que vengan en la base de datos*/
 				/*{
@@ -256,12 +282,12 @@
 					url: 'http://google.com/',
 					className: 'success'
 				}*/
-			],			
+			],
 		});
-		
-		
+
+
 	});
-	
+
 	var editar = function(id){
 		$.post("../controlador/apartadoSala_controller.php",
 				{'accion':3,'id':id},
@@ -294,13 +320,13 @@
 					var fin_format = end.setHours(parseInt(hora_fin[0]),parseInt(minuto_fin[0]));
 					var fin = new Date(fin_format);
 					var fin_format_env = formattedDate(fin,hora_fin[0],minuto_fin[0]);
-					
+
 					var id = 0;
-					
+
 					if($('#id_curso').val() != ''){
 						id = $('#id_curso').val();
 					}
-					
+
 					if (title != '') {
 						calendar.fullCalendar('renderEvent',
 							{
@@ -324,7 +350,7 @@
 						$.post( "../controlador/apartadoSala_controller.php",array_insert, function( data ) {
 							if(data.cod){
 								alert(data.mensaje );
-							}	
+							}
 						},'json');
 						title = '';
 						location.reload();
@@ -332,9 +358,9 @@
 					calendar.fullCalendar('unselect');
 					$('#myModal').modal('hide');
 				});
-			
+
 	}
-	
+
 	var eliminar = function(id){
 		$.post("../controlador/apartadoSala_controller.php",
 				{'accion':4,'id':id},
@@ -346,7 +372,7 @@
 
 </script>
 
- <script type="text/javascript"> 
+ <script type="text/javascript">
 	 /*para el combo de hora */
     $(function () {
        $('#datetimepicker3').datetimepicker({
@@ -356,7 +382,7 @@
           format: 'LT'
        });
 	});
-	
+
 	function formattedDate(d = new Date, h, m) {
 		let month = String(d.getMonth() + 1);
 		  let day = String(d.getDate());
@@ -367,7 +393,7 @@
 
 		  return `${year}-${month}-${day} ${h}:${m}:00`;
 	}
-	
+
 </script>
 <style>
 
@@ -379,25 +405,25 @@
 		font-family: 'Roboto', sans-serif;
 		/*background:url(http://www.digiphotohub.com/wp-content/uploads/2015/09/bigstock-Abstract-Blurred-Background-Of-92820527.jpg);*/
 		}
-		
+
 	#wrap {
 		width: 1100px;
 		margin: 0 auto;
 		}
-		
+
 	#external-events {
 		float: left;
 		width: 150px;
 		padding: 0 10px;
 		text-align: left;
 		}
-		
+
 	#external-events h4 {
 		font-size: 16px;
 		margin-top: 0;
 		padding-top: 1em;
 		}
-		
+
 	.external-event { /* try to mimick the look of a real event */
 		margin: 10px 0;
 		padding: 2px 4px;
@@ -406,13 +432,13 @@
 		font-size: .85em;
 		cursor: pointer;
 		}
-		
+
 	#external-events p {
 		margin: 1.5em 0;
 		font-size: 11px;
 		color: #666;
 		}
-		
+
 	#external-events p input {
 		margin: 0;
 		vertical-align: middle;
@@ -437,12 +463,26 @@ box-shadow: 0px 0px 21px 2px rgba(0,0,0,0.18);
 	<div id="header">
 	  <div class="container top-sect">
 		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="width:1200; height:0;padding:0;">
-			<img src="../static/images/baner-gobierno-MEFBP-.png"></img>
+			<img src="../static/images/baner-gobierno-MEFBP-.png" style="width: 100%;padding: 0;position: relative;top: -40px;display: inline-table;left: -25px;"></img>
 		</div>
-	  </div>  
+	  </div>
 	</div>
 </header>
 <div id='wrap'>
+</br></br>
+<div class="register-content">
+<div class="row row-space-10">
+	<div class="form-group">
+		<div class="col-sm-3" id="select_sala">
+			<select id="sala" style="background-color:#c25430;" class="form-control"></select>
+		</div>
+		<div class="col-sm-3">
+			<button class="btn btn-block"  style="background-color:#c25430;">Salir</button>
+		</div>
+	</div>
+</div>
+</div>
+</br></br>
 
 <div id='calendar'></div>
 
@@ -510,7 +550,7 @@ box-shadow: 0px 0px 21px 2px rgba(0,0,0,0.18);
 					</div>
 				</div>
 			</div>
-			
+
         </div>
         <div class="modal-footer">
 		  <button type="button" class="btn btn-default" id="guadar">Guardar</button>
@@ -521,4 +561,3 @@ box-shadow: 0px 0px 21px 2px rgba(0,0,0,0.18);
   </div>
 </body>
 </html>
-

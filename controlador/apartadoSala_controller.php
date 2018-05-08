@@ -15,7 +15,7 @@ if($accion==0){
 	$hora_fin = $_POST['hora_fin'];
 	$id_curso = $_POST['id_curso'];
 	$cod = false;
-	
+
 	if($id_curso == 0){
 		$array_insert = [
 			'titulo_curso' => $titulo,
@@ -25,7 +25,7 @@ if($accion==0){
 			'hora_ini' => $hora_inicio,
 			'hora_fin' => $hora_fin
 		];
-	
+
 		$resultado = $apartadoSala_model->insertar_datos(
 										'reserva_salas_nueva.curso',
 										$array_insert,
@@ -40,22 +40,22 @@ if($accion==0){
 			'hora_ini' => $hora_inicio,
 			'hora_fin' => $hora_fin
 		];
-		
+
 		$resultado = $apartadoSala_model->update_datos(
 										'reserva_salas_nueva.curso',
 										$array_update,
 										' id_curso = '.$id_curso
 									   );
-	
+
 	}
-	
+
 	if ($resultado){
 		$cod = true;
 		$mensaje = 'Dato Cargado Corectamente !!!';
 	}else{
 		$mensaje = 'Error al insetar la Sala !!!';
 	}
-	
+
 	$response = array(
 		"cod" => $cod,
 		"mensaje" => $mensaje,
@@ -77,7 +77,8 @@ if($accion == 1){
 }
 
 if($accion == 2){
-	$resultado = $apartadoSala_model->consulta_curso();
+	$id_sala = $_POST['id_sala'];
+	$resultado = $apartadoSala_model->consulta_curso($id_sala);
 	//print_r($resultado);
 	$response = array(
 		"res" => $resultado
@@ -87,7 +88,7 @@ if($accion == 2){
 }
 
 if($accion == 3){
-	
+
 	$id = $_POST['id'];
 	$resultado = $apartadoSala_model->consulta_curso_id($id);
 	$response = array(
@@ -98,7 +99,7 @@ if($accion == 3){
 }
 
 if($accion == 4){
-	
+
 	$id = $_POST['id'];
 	$resultado = $apartadoSala_model->eliminar_curso($id);
 	if($resultado){
