@@ -1,13 +1,13 @@
 <?php
 
 class BaseDeDato {
-	
+
       private $Servidor;
       private $Puerto;
       private $Nombre;
       private $Usuario;
       private $Clave;
-      
+
       function BaseDeDato($Servidor,$Puerto,$Nombre,$Usuario,$Clave)
       {
          $this->Servidor=$Servidor;
@@ -29,11 +29,11 @@ class BaseDeDato {
          //$BaseDato = mysqli_connect($this->Servidor,$this->Usuario,$this->Clave,$this->Nombre);
 	 $BaseDato = new mysqli($this->Servidor,$this->Usuario,$this->Clave,$this->Nombre);
 	 return $BaseDato;
-         
+
       }
       function Consultas($Consulta)
       {
-	 
+
          $Valor= $this->Conectar();
          if(($Valor->connect_erro) || ($Valor == null)){
 	    echo "error de conneccion</br>";
@@ -54,7 +54,7 @@ class BaseDeDato {
 		//echo $res;
 		if(!$res){
 			if ($Valor->affected_rows){
-				return true;			
+				return true;
 			}
 		}
 	   	$Valor->close();
@@ -65,15 +65,15 @@ class BaseDeDato {
 			while($dbResult = $Resultado->fetch_assoc()){
 				$rows[$i] = $dbResult;
 				$i++;
-			}	
+			}
 	   	}
 	   }
-	    
-	   
+
+
 	   $Resultado->free();
 	   $Valor->close();
            return $rows;// retorna si fue afectada una fila
-	    
+
          }
       }
    }

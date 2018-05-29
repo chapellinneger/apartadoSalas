@@ -66,6 +66,7 @@ if($accion==0){
 }
 
 if($accion == 1){
+	//echo 'pase por aqui';
 	$resultado = $apartadoSala_model->consulta_salas();
 	$resultado2 = $apartadoSala_model->consulta_tipo_curso();
 	$response = array(

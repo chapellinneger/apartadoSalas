@@ -140,7 +140,7 @@
 			allDaySlot: false,
 			selectHelper: true,
 			select: function(start, end, allDay) {
-				//var title = prompt('Titulo de prueba Jorge:');
+				//var title = prompt('Titulo de prueba:');
 				$('#tituloEvento').val('');
 				$('#descripEvento').val('');
 				$('#tipoEvento').val('');
@@ -292,13 +292,24 @@
 		$.post("../controlador/apartadoSala_controller.php",
 				{'accion':3,'id':id},
 				function(data){
+					var hora_ini = data.res[0]['hora_ini'];
+					hora_ini = hora_ini.split(" ");
+					var fecha_ini = hora_ini[0];
+					hora_ini = hora_ini[1].substring(0,5)
+					var hora_fin = data.res[0]['hora_fin'];
+					hora_fin = hora_fin.split(" ");
+					var fecha_fin = hora_fin[0];
+					hora_fin = hora_fin[1].substring(0,5)
+
 					$('#tituloEvento').val(data.res[0]['titulo_curso']);
 					$('#descripEvento').val(data.res[0]['descrip_curso']);
 					$('#tipoEvento').val(data.res[0]['id_tipo_curso']);
 					$('#salaEvento').val(data.res[0]['id_sala']);
-					$('#horaini').val(data.res[0]['hora_ini']);
-					$('#horafin').val(data.res[0]['hora_fin']);
+					$('#horaini').val(hora_ini);
+					$('#horafin').val(hora_fin);
 					$('#id_curso').val(data.res[0]['id_curso']);
+					$('#fecha_ini').val(fecha_ini);
+					$('#fecha_fin').val(fecha_fin);
 				},'json');
 
 		$('#myModal').modal({
@@ -312,12 +323,12 @@
 					var salaEvento = $('#salaEvento').val();
 					var hora_init = $('#horaini').val().split(":");
 					var minuto_init = hora_init[1].split(" ");
-					var ini_format = start.setHours(parseInt(hora_init[0]),parseInt(minuto_init[0]));
+					var ini_format = $('#fecha_ini').val() + ' ' +hora_init[0] + ':'+minuto_init[0];
 					var inicio = new Date(ini_format);
 					var ini_format_env = formattedDate(inicio,hora_init[0],minuto_init[0]);
 					var hora_fin = $('#horafin').val().split(":");
 					var minuto_fin = hora_fin[1].split(" ");
-					var fin_format = end.setHours(parseInt(hora_fin[0]),parseInt(minuto_fin[0]));
+					var fin_format = $('#fecha_fin').val() + ' ' +hora_fin[0]+':'+minuto_fin[0];
 					var fin = new Date(fin_format);
 					var fin_format_env = formattedDate(fin,hora_fin[0],minuto_fin[0]);
 
@@ -328,15 +339,6 @@
 					}
 
 					if (title != '') {
-						calendar.fullCalendar('renderEvent',
-							{
-								title: title,
-								start: inicio,
-								end: fin,
-								allDay: allDay
-							},
-							true // make the event "stick"
-						);
 						array_update = {
 							'id_curso': id,
 							'accion':0,
@@ -347,7 +349,7 @@
 							'hora_inicio':ini_format_env,
 							'hora_fin':fin_format_env
 						}
-						$.post( "../controlador/apartadoSala_controller.php",array_insert, function( data ) {
+						$.post( "../controlador/apartadoSala_controller.php",array_update, function( data ) {
 							if(data.cod){
 								alert(data.mensaje );
 							}
@@ -355,7 +357,6 @@
 						title = '';
 						location.reload();
 					}
-					calendar.fullCalendar('unselect');
 					$('#myModal').modal('hide');
 				});
 
@@ -473,14 +474,23 @@ box-shadow: 0px 0px 21px 2px rgba(0,0,0,0.18);
 <div class="register-content">
 <div class="row row-space-10">
 	<div class="form-group">
-		<div class="col-sm-3" id="select_sala">
-			<select id="sala" style="background-color:#c25430;" class="form-control"></select>
-		</div>
-		<div class="col-sm-3">
-			<button class="btn btn-block"  style="background-color:#c25430;">Salir</button>
+		<div class="col-sm-2 btn-group" id="select_sala" style="margin-left: -35px;">
+			<select id="sala"
+				class="form-control form-control-lg"
+				style="position: relative;margin-top: 14.8px;margin-left: 317px;"></select>
 		</div>
 	</div>
+	<div class="btn-group" id="select_sala">
+	  <button type="button" class="btn btn-default" onclick="location.href='http://10.79.6.109/intranet/source/vistas/'"> INTRANET</button>
+	  <button type="button" class="btn btn-default">VER D&Iacute;A ACTUAL</button>
+	  <button type="button" class="btn btn-default">REPORTES</button>
+	  <button type="button" class="btn btn-default" >SALIR</button>
+	</div>
 </div>
+
+
+
+
 </div>
 </br></br>
 
@@ -519,7 +529,7 @@ box-shadow: 0px 0px 21px 2px rgba(0,0,0,0.18);
 					<div class="col-sm-3">
 					  <label for="tipoEvento">Tipo de Evento:</label>
 						<select id="tipoEvento" class="form-control">
-							<option value="reunion">Reuni&oacute;n</option>
+
 						</select>
 					</div>
 					<div class="col-sm-3">
@@ -531,6 +541,7 @@ box-shadow: 0px 0px 21px 2px rgba(0,0,0,0.18);
 							<label for="horaini">Hora Inicio:</label>
 							<div class='input-group date' id='datetimepicker3'>
 								<input type='text' class="form-control" id="horaini" />
+								<input type='hidden' id="fecha_ini" />
 								<span class="input-group-addon">
 									<span class="glyphicon glyphicon-time"></span>
 								</span>
@@ -542,6 +553,7 @@ box-shadow: 0px 0px 21px 2px rgba(0,0,0,0.18);
 							<label for="horafin">Hora Fin:</label>
 							<div class='input-group date' id='datetimepicker3_2'>
 								<input type='text' class="form-control" id="horafin" />
+								<input type='hidden' id="fecha_fin" />
 								<span class="input-group-addon">
 									<span class="glyphicon glyphicon-time"></span>
 								</span>

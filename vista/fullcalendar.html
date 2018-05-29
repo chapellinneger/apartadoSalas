@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link href="../static/css/bootstrap.min.css" rel="stylesheet">
+<link href='../static/css/fullcalendar.css' rel='stylesheet' />
+<link href='../static/css/fullcalendar.print.css' rel='stylesheet' media='print' />
+
+
+<script src='../static/js/jquery/jquery-1.10.2.js'></script>
+<script src='../static/js/jquery/jquery-ui.custom.min.js'></script>
+<script src="../static/js/bootstrap.min.js"></script>
+
+<script src='../static/js/fullcalendar.js'></script>
+<script>
+
+	$(document).ready(function() {
+	    var date = new Date();
+		var d = date.getDate();
+		var m = date.getMonth();
+		var y = date.getFullYear();
+
+		$.post( "../controlador/apartadoSala_controller.php",{'accion':1}, function( data ) {
+			for(var i=0; i < data.res.length; i++){
+				$('#salaEvento').append('<option value="'+data.res[i]['id_sala']+'">'+data.res[i]['descrip_sala']+'</option>');
+				$('#sala').append('<option value="'+data.res[i]['id_sala']+'">'+data.res[i]['descrip_sala']+'</option>');
+			}
+
+			for(var j=0; j < data.res2.length; j++){
+				$('#tipoEvento').append('<option value="'+data.res2[j]['id_tipo_curso']+'">'+data.res2[j]['descrip_tipo_curso']+'</option>');
+			}
+
+		},'json');
+
+		var id_sala = $('#sala').val();
+		$.post("../controlador/apartadoSala_controller.php",{'accion':2,'id_sala':id_sala},
+		 function(data){
+			for(var x=0; x < data.res.length; x++){
+				var fecha = data.res[x]['hora_ini'].replace(' ','T')
+				calendar.fullCalendar('renderEvent',
+							{
+								id: data.res[x]['id_curso'],
+								title: data.res[x]['titulo_curso'],
+								start: new Date(fecha),
+								allDay: false,
+								className: 'important',
+								//url: 'http://localhost/apartadoSalas/vista/calendario.html#myModal',
+							},
+							true // make the event "stick"
+						);
+
+			}
+		},'json');
+
+		$('#sala').on('change',function(){
+			var id = $('#sala').val();
+			calendar.fullCalendar('removeEvents');
+			$.post("../controlador/apartadoSala_controller.php",{'accion':2,'id_sala':id},
+			 function(data){
+				for(var x=0; x < data.res.length; x++){
+					var fecha = data.res[x]['hora_ini'].replace(' ','T');
+					calendar.fullCalendar('renderEvent',
+								{
+									id: data.res[x]['id_curso'],
+									title: data.res[x]['titulo_curso'],
+									start: new Date(fecha),
+									allDay: false,
+									className: 'important',
+								},
+								true // make the event "stick"
+							);
+				}
+
+			},'json');
+
+		});
+
+		/*  className colors
+
+		className: default(transparent), important(red), chill(pink), success(green), info(blue)
+
+		*/
+
+
+		/* initialize the external events
+		-----------------------------------------------------------------*/
+
+		$('#external-events div.external-event').each(function() {
+
+			// create an Event Object (http://arshaw.com/fullcalendar/docs/event_data/Event_Object/)
+			// it doesn't need to have a start or end
+			var eventObject = {
+				title: $.trim($(this).text()) // use the element's text as the event title
+			};
+
+			// store the Event Object in the DOM element so we can get to it later
+			$(this).data('eventObject', eventObject);
+
+			// make the event draggable using jQuery UI
+			$(this).draggable({
+				zIndex: 999,
+				revert: true,      // will cause the event to go back to its
+				revertDuration: 0  //  original position after the drag
+			});
+
+		});
+
+
+		/* initialize the calendar
+		-----------------------------------------------------------------*/
+
+		var calendar =  $('#calendar').fullCalendar({
+			header: {
+				left: 'title',
+				center: 'agendaDay,agendaWeek,month',
+				right: 'prev,next today'
+			},
+			editable: true,
+			firstDay: 1, //  1(Monday) this can be changed to 0(Sunday) for the USA system
+			selectable: true,
+			defaultView: 'month',
+
+			axisFormat: 'h:mm',
+			columnFormat: {
+                month: 'ddd',    // Mon
+                week: 'ddd d', // Mon 7
+                day: 'dddd M/d',  // Monday 9/7
+                agendaDay: 'dddd d'
+            },
+            titleFormat: {
+                month: 'MMMM yyyy', // September 2009
+                week: "MMMM yyyy", // September 2009
+                day: 'MMMM yyyy'                  // Tuesday, Sep 8, 2009
+            },
+			allDaySlot: false,
+			selectHelper: true,
+			select: function(start, end, allDay) {
+				/*var title = prompt('Event Title:');
+				if (title) {
+					calendar.fullCalendar('renderEvent',
+						{
+							title: title,
+							start: start,
+							end: end,
+							allDay: allDay
+						},
+						true // make the event "stick"
+					);
+				}
+				calendar.fullCalendar('unselect');*/
+				$('#tituloEvento').val('');
+				$('#descripEvento').val('');
+				$('#tipoEvento').val('');
+				$('#salaEvento').val('');
+				$('#horaini').val('');
+				$('#horafin').val('');
+				$('#id_curso').val('');
+				$('#myModal').modal({
+						show: 'true'
+				});
+
+				$('#guadar').on("click",function(){
+					var array_insert = {};
+					var title = $('#tituloEvento').val();
+					var descripcion = $('#descripEvento').val();
+					var tipoEvento = $('#tipoEvento').val();
+					var salaEvento = $('#salaEvento').val();
+					var hora_init = $('#horaini').val().split(":");
+					var minuto_init = hora_init[1].split(" ");
+					var ini_format = start.setHours(parseInt(hora_init[0]),parseInt(minuto_init[0]));
+					var inicio = new Date(ini_format);
+					var ini_format_env = formattedDate(inicio,hora_init[0],minuto_init[0]);
+					var hora_fin = $('#horafin').val().split(":");
+					var minuto_fin = hora_fin[1].split(" ");
+					var fin_format = end.setHours(parseInt(hora_fin[0]),parseInt(minuto_fin[0]));
+					var fin = new Date(fin_format);
+					var fin_format_env = formattedDate(fin,hora_fin[0],minuto_fin[0]);
+
+					var id = 0;
+
+					if($('#id_curso').val() != ''){
+						id = $('#id_curso').val();
+					}
+
+					if (title != '') {
+						calendar.fullCalendar('renderEvent',
+							{
+								title: title,
+								start: inicio,
+								end: fin,
+								allDay: allDay
+							},
+							true // make the event "stick"
+						);
+						array_insert = {
+							'id_curso': id,
+							'accion':0,
+							'titulo':title,
+							'descripcion':descripcion,
+							'tipo_evento':tipoEvento,
+							'sala_evento':salaEvento,
+							'hora_inicio':ini_format_env,
+							'hora_fin':fin_format_env
+						}
+						$.post( "../controlador/apartadoSala_controller.php",array_insert, function( data ) {
+							if(data.cod){
+								alert(data.mensaje );
+								console.log(data.res);
+								console.log(calendar);
+							}
+
+						},'json');
+						title = '';
+						location.reload();
+					}
+					calendar.fullCalendar('unselect');
+					$('#myModal').modal('hide');
+				});
+			},
+			droppable: true, // this allows things to be dropped onto the calendar !!!
+			drop: function(date, allDay) { // this function is called when something is dropped
+
+				// retrieve the dropped element's stored Event Object
+				var originalEventObject = $(this).data('eventObject');
+
+				// we need to copy it, so that multiple events don't have a reference to the same object
+				var copiedEventObject = $.extend({}, originalEventObject);
+
+				// assign it the date that was reported
+				copiedEventObject.start = date;
+				copiedEventObject.allDay = allDay;
+
+				// render the event on the calendar
+				// the last `true` argument determines if the event "sticks" (http://arshaw.com/fullcalendar/docs/event_rendering/renderEvent/)
+				$('#calendar').fullCalendar('renderEvent', copiedEventObject, true);
+
+				// is the "remove after drop" checkbox checked?
+				if ($('#drop-remove').is(':checked')) {
+					// if so, remove the element from the "Draggable Events" list
+					$(this).remove();
+				}
+
+			},
+
+			events: [
+				/*{
+					title: 'All Day Event',
+					start: new Date(y, m, 1)
+				},
+				{
+					id: 999,
+					title: 'Repeating Event',
+					start: new Date(y, m, d-3, 16, 0),
+					allDay: false,
+					className: 'info'
+				},
+				{
+					id: 999,
+					title: 'Repeating Event',
+					start: new Date(y, m, d+4, 16, 0),
+					allDay: false,
+					className: 'info'
+				},
+				{
+					title: 'Meeting',
+					start: new Date(y, m, d, 10, 30),
+					allDay: false,
+					className: 'important'
+				},
+				{
+					title: 'Lunch',
+					start: new Date(y, m, d, 12, 0),
+					end: new Date(y, m, d, 14, 0),
+					allDay: false,
+					className: 'important'
+				},
+				{
+					title: 'Birthday Party',
+					start: new Date(y, m, d+1, 19, 0),
+					end: new Date(y, m, d+1, 22, 30),
+					allDay: false,
+				},
+				{
+					title: 'Click for Google',
+					start: new Date(y, m, 28),
+					end: new Date(y, m, 29),
+					url: 'http://google.com/',
+					className: 'success'
+				}*/
+			],
+		});
+
+
+	});
+
+	var editar = function(id){
+		$.post("../controlador/apartadoSala_controller.php",
+				{'accion':3,'id':id},
+				function(data){
+					var hora_ini = data.res[0]['hora_ini'];
+					hora_ini = hora_ini.split(" ");
+					var fecha_ini = hora_ini[0];
+					hora_ini = hora_ini[1].substring(0,5)
+					var hora_fin = data.res[0]['hora_fin'];
+					hora_fin = hora_fin.split(" ");
+					var fecha_fin = hora_fin[0];
+					hora_fin = hora_fin[1].substring(0,5)
+
+					$('#tituloEvento').val(data.res[0]['titulo_curso']);
+					$('#descripEvento').val(data.res[0]['descrip_curso']);
+					$('#tipoEvento').val(data.res[0]['id_tipo_curso']);
+					$('#salaEvento').val(data.res[0]['id_sala']);
+					$('#horaini').val(hora_ini);
+					$('#horafin').val(hora_fin);
+					$('#id_curso').val(data.res[0]['id_curso']);
+					$('#fecha_ini').val(fecha_ini);
+					$('#fecha_fin').val(fecha_fin);
+				},'json');
+
+		$('#myModal').modal({
+						show: 'true'
+					});
+		$('#guadar').on("click",function(){
+					var array_update = {};
+					var title = $('#tituloEvento').val();
+					var descripcion = $('#descripEvento').val();
+					var tipoEvento = $('#tipoEvento').val();
+					var salaEvento = $('#salaEvento').val();
+					var hora_init = $('#horaini').val().split(":");
+					var minuto_init = hora_init[1].split(" ");
+					var ini_format = $('#fecha_ini').val() + ' ' +hora_init[0] + ':'+minuto_init[0];
+					var inicio = new Date(ini_format);
+					var ini_format_env = formattedDate(inicio,hora_init[0],minuto_init[0]);
+					var hora_fin = $('#horafin').val().split(":");
+					var minuto_fin = hora_fin[1].split(" ");
+					var fin_format = $('#fecha_fin').val() + ' ' +hora_fin[0]+':'+minuto_fin[0];
+					var fin = new Date(fin_format);
+					var fin_format_env = formattedDate(fin,hora_fin[0],minuto_fin[0]);
+
+					var id = 0;
+
+					if($('#id_curso').val() != ''){
+						id = $('#id_curso').val();
+					}
+
+					if (title != '') {
+						array_update = {
+							'id_curso': id,
+							'accion':0,
+							'titulo':title,
+							'descripcion':descripcion,
+							'tipo_evento':tipoEvento,
+							'sala_evento':salaEvento,
+							'hora_inicio':ini_format_env,
+							'hora_fin':fin_format_env
+						}
+						$.post( "../controlador/apartadoSala_controller.php",array_update, function( data ) {
+							if(data.cod){
+								alert(data.mensaje );
+							}
+						},'json');
+						title = '';
+						location.reload();
+					}
+					$('#myModal').modal('hide');
+				});
+
+	}
+
+	var eliminar = function(id){
+		$.post("../controlador/apartadoSala_controller.php",
+				{'accion':4,'id':id},
+				function(data){
+					alert(data.mensaje);
+				},'json');
+		location.reload();
+	}
+
+</script>
+<style>
+
+	body {
+		margin-top: 40px;
+		text-align: center;
+		font-size: 14px;
+		font-family: "Helvetica Nueue",Arial,Verdana,sans-serif;
+		background-color: #DDDDDD;
+		}
+
+	#wrap {
+		width: 1100px;
+		margin: 0 auto;
+		}
+
+	#external-events {
+		float: left;
+		width: 150px;
+		padding: 0 10px;
+		text-align: left;
+		}
+
+	#external-events h4 {
+		font-size: 16px;
+		margin-top: 0;
+		padding-top: 1em;
+		}
+
+	.external-event { /* try to mimick the look of a real event */
+		margin: 10px 0;
+		padding: 2px 4px;
+		background: #3366CC;
+		color: #fff;
+		font-size: .85em;
+		cursor: pointer;
+		}
+
+	#external-events p {
+		margin: 1.5em 0;
+		font-size: 11px;
+		color: #666;
+		}
+
+	#external-events p input {
+		margin: 0;
+		vertical-align: middle;
+		}
+
+	#calendar {
+/* 		float: right; */
+        margin: 0 auto;
+		width: 900px;
+		background-color: #FFFFFF;
+		  border-radius: 6px;
+        box-shadow: 0 1px 2px #C3C3C3;
+		}
+
+</style>
+</head>
+<body>
+	<header>
+		<div id="header">
+		  <div class="container top-sect">
+			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="width:1200; height:0;padding:0;">
+				<img src="../static/images/baner-gobierno-MEFBP-.png" style="width: 100%;padding: 0;position: relative;top: -40px;display: inline-table;left: -25px;"></img>
+			</div>
+		  </div>
+		</div>
+	</header>
+<div id='wrap'>
+</br></br>
+<div class="register-content">
+<div class="row row-space-10">
+	<div class="form-group">
+		<div class="col-sm-2 btn-group" id="select_sala" style="margin-left: -35px;">
+			<select id="sala"
+				class="form-control form-control-lg"
+				style="position: relative;margin-top: 14.8px;margin-left: 306px;"></select>
+		</div>
+	</div>
+	<div class="btn-group" id="select_sala">
+	  <button type="button" class="btn btn-default" onclick="location.href='http://10.79.6.109/intranet/source/vistas/'"> INTRANET</button>
+	  <button type="button" class="btn btn-default">VER D&Iacute;A ACTUAL</button>
+	  <button type="button" class="btn btn-default">REPORTES</button>
+	  <button type="button" class="btn btn-default" >SALIR</button>
+	</div>
+</div>
+
+</br></br>
+<div id='calendar'></div>
+
+<div style='clear:both'></div>
+<!-- Modal -->
+ <div class="modal fade" id="myModal" role="dialog">
+	 <div class="modal-dialog modal-lg">
+		 <div class="modal-content">
+			 <div class="modal-header">
+				 <button type="button" class="close" data-dismiss="modal">&times;</button>
+				 <h4 class="modal-title">Asignación de sala</h4>
+			 </div>
+			 <div class="modal-body">
+		 <div class="row">
+			 <div class="form-group">
+				 <div class="col-sm-12">
+					 <input type="hidden" name="id_curso" id="id_curso"/>
+					 <label for="tituloEvento">Titulo:</label>
+					 <input type="input" class="form-control" style="text-transform:uppercase;" name="tituloEvento" id="tituloEvento"/>
+				 </div>
+							 </div>
+		 </div>
+		 <div class="row">
+			 <div class="form-group">
+				 <div class="col-sm-12">
+					 <label for="descripEvento">Descripci&oacute;n:</label>
+					 <input type="input" class="form-control" style="text-transform:uppercase;" name="descripEvento" id="descripEvento"/>
+				 </div>
+							 </div>
+		 </div>
+					 <div class="row">
+			 <div class="form-group">
+				 <div class="col-sm-3">
+					 <label for="tipoEvento">Tipo de Evento:</label>
+					 <select id="tipoEvento" class="form-control">
+
+					 </select>
+				 </div>
+				 <div class="col-sm-3">
+					 <label for="salaEvento">Nombre Sala:</label>
+					 <select id="salaEvento" class="form-control"></select>
+				 </div>
+				 <div class='col-sm-3'>
+					 <div class="form-group">
+						 <label for="horaini">Hora Inicio:</label>
+						 <div class='input-group date' id='datetimepicker3'>
+							 <input type='text' class="form-control" id="horaini" />
+							 <input type='hidden' id="fecha_ini" />
+							 <span class="input-group-addon">
+								 <span class="glyphicon glyphicon-time"></span>
+							 </span>
+						 </div>
+					 </div>
+				 </div>
+				 <div class='col-sm-3'>
+					 <div class="form-group">
+						 <label for="horafin">Hora Fin:</label>
+						 <div class='input-group date' id='datetimepicker3_2'>
+							 <input type='text' class="form-control" id="horafin" />
+							 <input type='hidden' id="fecha_fin" />
+							 <span class="input-group-addon">
+								 <span class="glyphicon glyphicon-time"></span>
+							 </span>
+						 </div>
+					 </div>
+				 </div>
+			 </div>
+		 </div>
+
+			 </div>
+			 <div class="modal-footer">
+		 <button type="button" class="btn btn-default" id="guadar">Guardar</button>
+				 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			 </div>
+		 </div>
+	 </div>
+ </div>
+</div>
+
+</body>
+</html>
