@@ -134,7 +134,7 @@ html .fc,
 }
 
 .fc-state-highlight > div > div.fc-day-number{
-    background-color: #ff3b30;
+    background-color: #30a0ff;
     color: #FFFFFF;
     border-radius: 50%;
     margin: 4px;
@@ -211,8 +211,8 @@ html .fc,
 
 
 .fc-state-default {
-	border-color: #ff3b30;
-	color: #ff3b30;	
+	border-color: #0692f9;
+	color: #0692f9;	
 }
 .fc-button-month.fc-state-default, .fc-button-agendaWeek.fc-state-default, .fc-button-agendaDay.fc-state-default{
     min-width: 67px;
@@ -224,12 +224,12 @@ html .fc,
 .fc-state-down,
 .fc-state-active,
 .fc-state-disabled {
-	color: #333333;
-	background-color: #FFE3E3;
+	color: #0961fb;
+	background-color: #B0DFF9;
 	}
 
 .fc-state-hover {
-	color: #ff3b30;
+	color: #00FFFF;
 	text-decoration: none;
 	background-position: 0 -15px;
 	-webkit-transition: background-position 0.1s linear;
@@ -240,20 +240,20 @@ html .fc,
 
 .fc-state-down,
 .fc-state-active {
-	background-color: #ff3b30;
+	background-color: #e0edfc;
 	background-image: none;
 	outline: 0;
-	color: #FFFFFF;
+	color: #0000FF;
 }
 
 .fc-state-disabled {
 	cursor: default;
 	background-image: none;
-	background-color: #FFE3E3;
+	background-color: #ECF6FB;
 	filter: alpha(opacity=65);
 	box-shadow: none;
-	border:1px solid #FFE3E3;
-	color: #ff3b30;
+	border:1px solid #0F68EF;
+	color: #0961fb;
 	}
 
 	
@@ -273,7 +273,7 @@ html .fc,
 .fc-event {
 	border: 1px solid #FFF; /* default BORDER color */
 	background-color: #FFF; /* default BACKGROUND color */
-	color: #919191;               /* default TEXT color */
+	color: #050404;               /* default TEXT color */
 	font-size: 12px;
 	cursor: default;
 }
@@ -284,7 +284,7 @@ html .fc,
     background-color: #c6ebfe;
 }
 .fc-event.important{
-    background-color: #FFBEBE;
+    background-color: #97C5F2;
 }
 .fc-event.success{
     background-color: #BEFFBF;
@@ -622,7 +622,7 @@ table.fc-border-separate {
 	}
 	
 thead tr.fc-first{
-    background-color: #f7f7f7;
+    background-color: #1a80ec;
 }
 table.fc-header{
     background-color: #FFFFFF;
