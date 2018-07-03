@@ -1,6 +1,9 @@
 <?php
 include('./../modelo/apartadoSala_model.php');
 header('Content-type: text/html; charset=utf-8');
+$cedula = '17247432';//$_SESSION['cedula'];
+$nombre = 'jorge rengifo';//$_SESSION['primer_nombre']." ".$_SESSION['primer_apellido'];
+$correo = 'jrengifo@mppef.gob.ve';//$_SESSION['correo'];
 
 $accion = $_POST['accion'];
 
@@ -16,6 +19,16 @@ if($accion==0){
 	$id_curso = $_POST['id_curso'];
 	$cod = false;
 
+	$resultado_existencia = $apartadoSala_model->verifica_existencia_curso($hora_inicio,$hora_fin,$sala_evento,$id_curso);
+	if($resultado_existencia){
+		$response = array(
+			"cod" => false,
+			"mensaje" => 'Ya existe un evento cargado en esta hora',
+			);
+		echo json_encode($response);//retorna el areglo $response
+		die();
+	}
+
 	if($id_curso == 0){
 		$array_insert = [
 			'titulo_curso' => $titulo,
@@ -23,9 +36,11 @@ if($accion==0){
 			'id_sala' => $sala_evento,
 			'id_tipo_curso' => $tipo_envento,
 			'hora_ini' => $hora_inicio,
-			'hora_fin' => $hora_fin
+			'hora_fin' => $hora_fin,
+			'num_cedula' => $cedula,
+			'nombre_apellido' => $nombre,
+			'correo' => $correo
 		];
-
 		$resultado = $apartadoSala_model->insertar_datos(
 										'reserva_salas_nueva.curso',
 										$array_insert,
@@ -51,7 +66,7 @@ if($accion==0){
 
 	if ($resultado){
 		$cod = true;
-		$mensaje = 'Dato Cargado Corectamente !!!';
+		$mensaje = 'Dato Cargado Correctamente !!!';
 	}else{
 		$mensaje = 'Error al insetar la Sala !!!';
 	}
@@ -71,7 +86,8 @@ if($accion == 1){
 	$resultado2 = $apartadoSala_model->consulta_tipo_curso();
 	$response = array(
 		"res" => $resultado,
-		"res2" => $resultado2
+		"res2" => $resultado2,
+		"nombre" => $nombre
 	);
 	echo json_encode($response);//retorna el areglo $response
 	die();

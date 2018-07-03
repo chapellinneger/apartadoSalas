@@ -18,7 +18,7 @@
 <script>
 
 	$(document).ready(function() {
-	    var date = new Date();
+	  var date = new Date();
 		var d = date.getDate();
 		var m = date.getMonth();
 		var y = date.getFullYear();
@@ -32,8 +32,10 @@
 			for(var j=0; j < data.res2.length; j++){
 				$('#tipoEvento').append('<option value="'+data.res2[j]['id_tipo_curso']+'">'+data.res2[j]['descrip_tipo_curso']+'</option>');
 			}
+			$("#nombre_usuario").text(data.nombre);
 
 		},'json');
+		$("#txtDate").text(convertDate());
 
 		var id_sala = $('#sala').val();
 		$.post("../controlador/apartadoSala_controller.php",{'accion':2,'id_sala':id_sala},
@@ -169,15 +171,15 @@
 					var tipoEvento = $('#tipoEvento').val();
 					var salaEvento = $('#salaEvento').val();
 					var hora_init = $('#horaini').val().split(":");
-					var minuto_init = hora_init[1].split(" ");
-					var ini_format = start.setHours(parseInt(hora_init[0]),parseInt(minuto_init[0]));
+					var minuto_init = hora_init[1].trim();
+					var ini_format = start.setHours(parseInt(hora_init[0].trim()),parseInt(minuto_init));
 					var inicio = new Date(ini_format);
-					var ini_format_env = formattedDate(inicio,hora_init[0],minuto_init[0]);
+					var ini_format_env = formattedDate(inicio,hora_init[0].trim(),minuto_init);
 					var hora_fin = $('#horafin').val().split(":");
-					var minuto_fin = hora_fin[1].split(" ");
-					var fin_format = end.setHours(parseInt(hora_fin[0]),parseInt(minuto_fin[0]));
+					var minuto_fin = hora_fin[1].trim();
+					var fin_format = end.setHours(parseInt(hora_fin[0].trim()),parseInt(minuto_fin));
 					var fin = new Date(fin_format);
-					var fin_format_env = formattedDate(fin,hora_fin[0],minuto_fin[0]);
+					var fin_format_env = formattedDate(fin,hora_fin[0].trim(),minuto_fin);
 
 					var id = 0;
 
@@ -208,8 +210,8 @@
 						$.post( "../controlador/apartadoSala_controller.php",array_insert, function( data ) {
 							if(data.cod){
 								alert(data.mensaje );
-								console.log(data.res);
-								console.log(calendar);
+							}else{
+								alert(data.mensaje );
 							}
 
 						},'json');
@@ -318,6 +320,8 @@
 					$('#id_curso').val(data.res[0]['id_curso']);
 					$('#fecha_ini').val(fecha_ini);
 					$('#fecha_fin').val(fecha_fin);
+					$('#fecha_ini_aux').val(fecha_ini);
+					$('#fecha_fin_aux').val(fecha_fin);
 				},'json');
 
 		$('#myModal').modal({
@@ -329,16 +333,20 @@
 					var descripcion = $('#descripEvento').val();
 					var tipoEvento = $('#tipoEvento').val();
 					var salaEvento = $('#salaEvento').val();
+					var fecha_ini = $('#fecha_ini_aux').val()+'T12:00:00Z';
+					var fecha_fin = $('#fecha_fin_aux').val()+'T12:00:00Z';
+					var start = new Date(fecha_ini);
+					var end = new Date(fecha_fin);
 					var hora_init = $('#horaini').val().split(":");
-					var minuto_init = hora_init[1].split(" ");
-					var ini_format = $('#fecha_ini').val() + ' ' +hora_init[0] + ':'+minuto_init[0];
+					var minuto_init = hora_init[1].trim();
+					var ini_format = start.setHours(parseInt(hora_init[0].trim()),parseInt(minuto_init));
 					var inicio = new Date(ini_format);
-					var ini_format_env = formattedDate(inicio,hora_init[0],minuto_init[0]);
+					var ini_format_env = formattedDate(inicio,hora_init[0].trim(),minuto_init);
 					var hora_fin = $('#horafin').val().split(":");
-					var minuto_fin = hora_fin[1].split(" ");
-					var fin_format = $('#fecha_fin').val() + ' ' +hora_fin[0]+':'+minuto_fin[0];
+					var minuto_fin = hora_fin[1].trim();
+					var fin_format = end.setHours(parseInt(hora_fin[0].trim()),parseInt(minuto_fin));
 					var fin = new Date(fin_format);
-					var fin_format_env = formattedDate(fin,hora_fin[0],minuto_fin[0]);
+					var fin_format_env = formattedDate(fin,hora_fin[0].trim(),minuto_fin);
 
 					var id = 0;
 
@@ -384,10 +392,10 @@
 	/*para el combo de hora */
 	 $(function () {
 			$('#datetimepicker3').datetimepicker({
-				 format: 'LT'
+				 format: 'HH : mm'
 			});
 			$('#datetimepicker3_2').datetimepicker({
-				 format: 'LT'
+				 format: 'HH : mm'
 			});
  });
 
@@ -401,6 +409,17 @@
 
 		 return `${year}-${month}-${day} ${h}:${m}:00`;
  }
+
+ function convertDate(inputFormat='') {
+  function pad(s) { return (s < 10) ? '0' + s : s; }
+  if (inputFormat == ''){
+  	var d = new Date();
+  }else{
+  	var d = new Date(inputFormat);
+  }
+
+  return [pad(d.getDate()), pad(d.getMonth()+1), d.getFullYear()].join('/');
+}
 
 </script>
 <style>
@@ -464,30 +483,31 @@
 </head>
 <body>
 	<header>
-		<div id="header">
-		  <div class="container top-sect">
-			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="width:1200; height:0;padding:0;">
-				<img src="../static/images/baner-gobierno-MEFBP-.png" style="width: 100%;padding: 0;position: relative;top: -40px;display: inline-table;left: -25px; background-color: #035c94;"></img>
-			</div>
-		  </div>
-		</div>
-	</header>
+    <div id="header" style="width: 100% !important;background: blue;position: fixed;">
+          <div class="top-sect" style="background: #035c94;">
+               <img src="../static/images/baner-gobierno-MEFBP-.png" style="width: 1142px; position: relative;top: -1.2px;display: inline-table;left: 14px;">
+          </div>
+        </div>
+    </header>
+
 <div id='wrap'>
 </br></br>
 <div class="register-content">
 <div class="row row-space-10">
+	<div>
+		 <strong id="txtDate">
+	</div>
+	<div style="margin-left: 76px; margin-top: 46.8px;">
+		<h1>BIENVENIDO</h1><p><b><strong id="nombre_usuario"></strong></b></p>
+  </div>
 	<div class="form-group">
-		<div class="col-sm-2 btn-group" id="select_sala" style="margin-left: -35px;">
-			<select id="sala"
-				class="form-control form-control-lg"
-				style="position: relative;margin-top: 14.8px;margin-left: 372px;"></select>
+		<div class="col-sm-2 btn-group" id="select_sala" style="margin-left: 76px; margin-top: 46.8px;">
+		   <h4>Cambiar Sala</h4><select id="sala" class="form-control form-control-lg" style="position: relative;margin-top: -36.2px;margin-left: 136px;">
+			</select>
 		</div>
 	</div>
-	<div class="btn-group" id="select_sala">
+	<div class="btn-group" id="select_sala" style="position: relative;margin-top: 36.8px;margin-left: 375px;">
 	  <button type="button" class="btn btn-default" onclick="location.href='http://10.79.6.109/intranet/source/vistas/'"> INTRANET</button>
-<!--
-	  <button type="button" class="btn btn-default">VER D&Iacute;A ACTUAL</button>
--->
 	  <button type="button" class="btn btn-default">REPORTES</button>
 	  <button type="button" class="btn btn-default" >SALIR</button>
 	</div>
@@ -546,6 +566,7 @@
 							 </span>
 						 </div>
 					 </div>
+					 <input type='hidden' id="fecha_ini_aux" />
 				 </div>
 				 <div class='col-sm-3'>
 					 <div class="form-group">
@@ -558,6 +579,7 @@
 							 </span>
 						 </div>
 					 </div>
+					 <input type='hidden' id="fecha_fin_aux" />
 				 </div>
 			 </div>
 		 </div>

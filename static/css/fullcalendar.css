@@ -243,7 +243,7 @@ html .fc,
 	background-color: #e0edfc;
 	background-image: none;
 	outline: 0;
-	color: #0000FF;
+	color: #0692f9;
 }
 
 .fc-state-disabled {
@@ -647,7 +647,7 @@ table.fc-header{
     transition: background-color 0.2s;
 }
 .fc-week .fc-day.fc-state-highlight:hover .fc-day-number{
-    background-color:  #ff3b30;
+    background-color:  #30afff;
 }
 .fc-button-today{
     border: 1px solid rgba(255,255,255,.0);
