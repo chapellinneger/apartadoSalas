@@ -27,7 +27,7 @@ class apartadoSala_model  extends clase_generica{
 		$datos_generico->setRow($array);
 		$sql = $datos_generico->update($nombre_tabla);
 		$sql = $sql.$where;
-		echo $sql;
+		//echo $sql;
 		$result = $datos_generico->ConsultaG($sql);
 		//echo $result;
 		if($result){
@@ -115,6 +115,20 @@ class apartadoSala_model  extends clase_generica{
 			return false;
 			//echo 'paso mal';
 		}
+	}
+
+	function reporte_existencia_curso($hora_ini,$hora_fin, $id_sala){
+		$datos_generico = new clase_generica();
+		$sql = "SELECT a.* FROM reserva_salas_nueva.curso
+						as a WHERE
+						a.id_sala = $id_sala AND
+						a.hora_ini BETWEEN '$hora_ini' AND '$hora_fin'
+						or
+						a.id_sala = $id_sala AND
+						a.hora_fin BETWEEN '$hora_ini' AND '$hora_fin';";
+		//echo $sql;
+		$result = $datos_generico->ConsultaG($sql);
+		return $result;
 	}
 
 }

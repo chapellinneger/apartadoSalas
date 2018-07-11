@@ -26,6 +26,7 @@
 		$.post( "../controlador/apartadoSala_controller.php",{'accion':1}, function( data ) {
 			for(var i=0; i < data.res.length; i++){
 				$('#salaEvento').append('<option value="'+data.res[i]['id_sala']+'">'+data.res[i]['descrip_sala']+'</option>');
+				$('#salaEvento_re').append('<option value="'+data.res[i]['id_sala']+'">'+data.res[i]['descrip_sala']+'</option>');
 				$('#sala').append('<option value="'+data.res[i]['id_sala']+'">'+data.res[i]['descrip_sala']+'</option>');
 			}
 
@@ -153,6 +154,10 @@
 					);
 				}
 				calendar.fullCalendar('unselect');*/
+				if(!verifica_fecha_actual(start)){
+					alert('No Puede reservar sala para dias menores a hoy!!!');
+					return false;
+				}
 				$('#tituloEvento').val('');
 				$('#descripEvento').val('');
 				$('#tipoEvento').val('');
@@ -210,13 +215,21 @@
 						$.post( "../controlador/apartadoSala_controller.php",array_insert, function( data ) {
 							if(data.cod){
 								alert(data.mensaje );
+								setTimeout(function()
+						    {
+						        location.reload();
+						    }, 1000);
 							}else{
 								alert(data.mensaje );
+								setTimeout(function()
+						    {
+						        location.reload();
+						    }, 500);
 							}
 
 						},'json');
 						title = '';
-						location.reload();
+
 					}
 					calendar.fullCalendar('unselect');
 					$('#myModal').modal('hide');
@@ -368,10 +381,14 @@
 						$.post( "../controlador/apartadoSala_controller.php",array_update, function( data ) {
 							if(data.cod){
 								alert(data.mensaje );
+								setTimeout(function()
+						    {
+						        location.reload();
+						    }, 1000);
 							}
 						},'json');
 						title = '';
-						location.reload();
+						//location.reload();
 					}
 					$('#myModal').modal('hide');
 				});
@@ -383,10 +400,65 @@
 				{'accion':4,'id':id},
 				function(data){
 					alert(data.mensaje);
+					setTimeout(function()
+					{
+							location.reload();
+					}, 1000);
 				},'json');
-		location.reload();
+		//location.reload();
 	}
 
+  var reportes = function(){
+		$('#ModalReport').modal({
+						show: 'true'
+					});
+		$('#genera_reporte').on('click',function(){
+			var salaEvento = $('#salaEvento_re').val();
+			var fecha_ini = $('#fecha_hora_ini').val();
+			var fecha_fin = $('#fecha_hora_fin').val();
+
+			if(fecha_ini == ''){
+				alert('Debe ingresar una fecha y hora de inicio');
+				return false
+			}
+
+			if(fecha_fin == ''){
+				alert('Debe ingresar una fecha y hora de Fin');
+				return false
+			}
+
+			var fecha_ini_a = fecha_ini.split(' ')[0].split('/');
+			var fecha_fin_a = fecha_fin.split(' ')[0].split('/');
+			var hora_init = fecha_ini.split(' ')[1].split(":");
+			var hora_fin = fecha_fin.split(' ')[1].split(":");
+			var format_fecha_ini = fecha_ini_a[2]+'-'+fecha_ini_a[1]+'-'+fecha_ini_a[0]+'T12:00:00Z';
+			var format_fecha_fin = fecha_fin_a[2]+'-'+fecha_fin_a[1]+'-'+fecha_fin_a[0]+'T12:00:00Z';
+			var inicio = new Date(format_fecha_ini);
+			var fin = new Date(format_fecha_fin);
+			var ini_format = inicio.setHours(parseInt(hora_init[0].trim()),parseInt(hora_init[1].trim()));
+			var fin_format = fin.setHours(parseInt(hora_fin[0].trim()),parseInt(hora_fin[1].trim()));
+			var inicio2 = new Date(ini_format);
+			var fin2 = new Date(fin_format);
+			var ini_format_env = formattedDate(inicio2,hora_init[0].trim(),hora_init[1].trim());
+			var fin_format_env = formattedDate(fin2,hora_fin[0].trim(),hora_fin[1].trim());
+
+			var url = "../controlador/reporte_inicial.php?sala_evento="+salaEvento+"&hora_inicio="+ini_format_env+"&hora_fin="+fin_format_env;
+			$(location).attr('href',url);
+		});
+	}
+
+	var verifica_fecha_actual = function (fecha_validar){
+		var fecha_select = new Date(fecha_validar);
+		var aux_fecha_select = formattedDate(fecha_select,'00','00');
+		var fecha_res = new Date(aux_fecha_select);
+		var hoy = new Date();
+		hoy.setHours(0,0,0,0);
+		if (hoy > fecha_res) {
+  		return false;
+		}else{
+			return true;
+		}
+	}
 </script>
 <script type="text/javascript">
 	/*para el combo de hora */
@@ -396,6 +468,13 @@
 			});
 			$('#datetimepicker3_2').datetimepicker({
 				 format: 'HH : mm'
+			});
+
+			$('#datetimepicker4').datetimepicker({
+				 format: 'DD/MM/YYYY HH:mm'
+			});
+			$('#datetimepicker4_2').datetimepicker({
+				 format: 'DD/MM/YYYY HH:mm'
 			});
  });
 
@@ -508,7 +587,7 @@
 	</div>
 	<div class="btn-group" id="select_sala" style="position: relative;margin-top: 36.8px;margin-left: 375px;">
 	  <button type="button" class="btn btn-default" onclick="location.href='http://10.79.6.109/intranet/source/vistas/'"> INTRANET</button>
-	  <button type="button" class="btn btn-default">REPORTES</button>
+	  <button type="button" class="btn btn-default" onclick="reportes();">REPORTES</button>
 	  <button type="button" class="btn btn-default" >SALIR</button>
 	</div>
 </div>
@@ -592,7 +671,57 @@
 		 </div>
 	 </div>
  </div>
-</div>
+ <!--Fin myModal-->
+ <!-- Modal Reporte-->
+	  <div class="modal fade" id="ModalReport" role="dialog">
+	 	 <div class="modal-dialog modal-lg">
+	 		 <div class="modal-content">
+	 			 <div class="modal-header">
+					 <button type="button" class="close" data-dismiss="modal">&times;</button>
+					 <h4 class="modal-title">Reporte de asignaci&oacute;n de sala</h4>
+				 </div>
+				 <div class="modal-body">
+					 <div class="row">
+						 <div class="form-group">
+							 <div class="col-sm-3">
+								 <label for="salaEvento_re">Nombre Sala:</label>
+								 <select id="salaEvento_re" class="form-control"></select>
+							 </div>
+							 <div class='col-sm-3'>
+								 <div class="form-group">
+									 <label for="horaini">Fecha y Hora Inicio:</label>
+									 <div class='input-group date' id='datetimepicker4'>
+										 <input type='text' class="form-control" id="fecha_hora_ini" />
+										 <span class="input-group-addon">
+											 <span class="glyphicon glyphicon-time"></span>
+										 </span>
+									 </div>
+								 </div>
+							 </div>
+							 <div class='col-sm-3'>
+								 <div class="form-group">
+									 <label for="horafin">Fecha y Hora Fin:</label>
+									 <div class='input-group date' id='datetimepicker4_2'>
+										 <input type='text' class="form-control" id="fecha_hora_fin" />
+										 <span class="input-group-addon">
+											 <span class="glyphicon glyphicon-time"></span>
+										 </span>
+									 </div>
+								 </div>
+							 </div>
+						 </div>
+					 </div>
+				 </div>
+				 <div class="modal-footer">
+			     <button type="button" class="btn btn-default" id="genera_reporte">Generar Reporte</button>
+					 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				 </div>
+			 </div>
+		 </div>
+	 </div>
+	 <!--Fin myModal-->
 
+  </div>
+</div>
 </body>
 </html>
