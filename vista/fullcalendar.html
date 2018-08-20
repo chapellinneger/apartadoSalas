@@ -459,6 +459,13 @@
 			return true;
 		}
 	}
+	var cerrar_ventana = function(){
+		if (confirm("Close Window?")) {
+			//var ww = window.open(window.location, '_self');
+			//ww.close();
+			window.history.back();
+	  }
+	}
 </script>
 <script type="text/javascript">
 	/*para el combo de hora */
@@ -588,7 +595,7 @@
 	<div class="btn-group" id="select_sala" style="position: relative;margin-top: 36.8px;margin-left: 375px;">
 	  <button type="button" class="btn btn-default" onclick="location.href='http://10.79.6.109/intranet/source/vistas/'"> INTRANET</button>
 	  <button type="button" class="btn btn-default" onclick="reportes();">REPORTES</button>
-	  <button type="button" class="btn btn-default" >SALIR</button>
+	  <button type="button" class="btn btn-default" onclick="cerrar_ventana();return false;" >SALIR</button>
 	</div>
 </div>
 
