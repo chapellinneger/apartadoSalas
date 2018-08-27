@@ -1,9 +1,14 @@
 <?php
 include('./../modelo/apartadoSala_model.php');
 header('Content-type: text/html; charset=utf-8');
-$cedula = '17247432';//$_SESSION['cedula'];
-$nombre = 'jorge rengifo';//$_SESSION['primer_nombre']." ".$_SESSION['primer_apellido'];
-$correo = 'jrengifo@mppef.gob.ve';//$_SESSION['correo'];
+session_start();
+//$cedula = $_SESSION['cedula'];
+//$nombre = $_SESSION['primer_nombre']." ".$_SESSION['primer_apellido'];
+//$correo = $_SESSION['correo'];
+
+$cedula = 16849977;
+$nombre = "Yoselin Reyes";
+$correo = "yoselinreyes@gmail.com";
 
 $accion = $_POST['accion'];
 
@@ -98,7 +103,8 @@ if($accion == 2){
 	$resultado = $apartadoSala_model->consulta_curso($id_sala);
 	//print_r($resultado);
 	$response = array(
-		"res" => $resultado
+		"res" => $resultado,
+		"session_ced" =>$cedula,
 	);
 	echo json_encode($response);//retorna el areglo $response
 	die();
@@ -126,6 +132,26 @@ if($accion == 4){
 	}else{
 		$response = array(
 		"mensaje" => "Datos no fueron eliminados!!!"
+		);
+	}
+
+	echo json_encode($response);//retorna el areglo $response
+	die();
+}
+
+if($accion == 5){
+	$resultado_session = false;
+	if($cedula != ''){
+		$resultado_session = true;
+	}
+	if(!$resultado_session){
+		$response = array(
+		"res" => 0,
+		"mensaje" => "Debe Estar Logueado en la intranet para apartar una sala",
+		);
+	}else{
+		$response = array(
+		"res" => 1
 		);
 	}
 

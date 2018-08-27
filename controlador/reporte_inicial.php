@@ -16,15 +16,15 @@ $pdf->AddPage();
 $pdf->SetFillColor(232,232,232);
 
 $pdf->SetFont('Arial','B',12);
-$pdf->Cell(40,6,'FECHA INCIO',1,0,'C',1);
-$pdf->Cell(40,6,'FECHA FIN',1,0,'C',1);
+$pdf->Cell(60,6,'FECHA INCIO',1,0,'C',1);
+$pdf->Cell(60,6,'FECHA FIN',1,0,'C',1);
 $pdf->Cell(70,6,'RESPONSABLE',1,1,'C',1);
 
 $pdf->SetFont('Arial','',10);
 
 foreach ($resultado as $data) {
-  $pdf->Cell(40,6,$data['hora_ini'],1,0,'C');
-  $pdf->Cell(40,6,$data['hora_fin'],1,0,'C');
+  $pdf->Cell(60,6,$data['hora_ini'],1,0,'C');
+  $pdf->Cell(60,6,$data['hora_fin'],1,0,'C');
   $pdf->Cell(70,6,utf8_decode($data['nombre_apellido']),1,1,'C');
 }
 

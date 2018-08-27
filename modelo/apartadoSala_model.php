@@ -11,6 +11,7 @@ class apartadoSala_model  extends clase_generica{
 		$sql = $datos_generico->insert($nombre_tabla);
 		$sql = $sql.$where;
 		//echo $sql;
+		//die();
 		$result = $datos_generico->ConsultaG($sql);
 		//echo $result;
 		if($result){
@@ -66,7 +67,9 @@ class apartadoSala_model  extends clase_generica{
 			$id_sala = 1;
 		}
 		$datos_generico = new clase_generica();
-		$sql = "SELECT * FROM reserva_salas_nueva.curso where id_sala = $id_sala";
+		$sql = "SELECT a.*,b.* FROM reserva_salas_nueva.curso as a
+						inner join reserva_salas_nueva.salas as b
+						where a.id_sala = $id_sala and b.id_sala = $id_sala";
 		$result = $datos_generico->ConsultaG($sql);
 		return $result;
 	}

@@ -3969,9 +3969,10 @@ function AgendaEventRenderer() {
 		if (seg.isEnd) {
 			classes.push('fc-event-end');
 		}
-    //jorge Rengifo
+    //mod
 		if (event.id){
 			classes.push('fc-event-id');
+			//classes.push('tooltip');
 		}
 		classes = classes.concat(event.className);
 		if (event.source) {
@@ -3992,7 +3993,7 @@ function AgendaEventRenderer() {
 				skinCss +
 				"'" +
 			">" +
-			"<div class='fc-event-inner'>" +
+			"<div class='fc-event-inner' id='"+event.id+"' data-toggle='tooltip' title='Titulo: "+event.title+"\nApartado Por: "+event.creado+"\nSala: "+event.sala+"'>" +
 			"<div class='fc-event-time'>" +
 			htmlEscape(formatDates(event.start, event.end, opt('timeFormat'))) +
 			"</div>" +
@@ -5328,9 +5329,10 @@ function DayEventRenderer() {
 		if (segment.isEnd) {
 			classNames.push('fc-event-end');
 		}
-    //jorge Rengifo
+    //mod
     		if (event.id){
 			classNames.push('fc-event-id');
+			//classNames.push('tooltip');
 		}
 		// use the event's configured classNames
 		// guaranteed to be an array via `normalizeEvent`
@@ -5358,7 +5360,7 @@ function DayEventRenderer() {
 				skinCss +
 				"'" +
 			">" +
-			"<div class='fc-event-inner'>";
+			"<div class='fc-event-inner' id='"+event.id+"' data-toggle='tooltip' title='Titulo: "+event.title+"\nApartado Por: "+event.creado+"\nSala: "+event.sala+"'>";
 		if (!event.allDay && segment.isStart) {
 			html +=
 				"<span class='fc-event-time'>" +
@@ -5367,13 +5369,30 @@ function DayEventRenderer() {
 				) +
 				"m&nbsp;</span>";
 		}
-		html +=
-			"<span class='fc-event-title'>" +
-			htmlEscape(event.title || '') +
-			"</span>" +
-      "<span onclick='editar("+event.id+")' class=\"glyphicon\">&#x270f;</span>"+
-			"<span onclick='eliminar("+event.id+")' class=\"glyphicon\">&#xe014;</span>"+
-			"</div>";
+		if(event.see_edit_delete){
+			html +=
+				"<span class='fc-event-title'>" +
+				htmlEscape(event.title || '') +
+				"</span>" +
+				//"<i onclick='editar("+event.id+")' class="fa fa-pencil"></i>"+
+				//"<span onclick='editar("+event.id+")' style='color:green' class=\"glyphicon\">&#xf044;</span>"+
+
+				"<div  style='position: absolute; bottom: 1px; right: 10px;' ><a onclick='editar("+event.id+")'><i style='color:green' class='fa fa-edit fa-lg'></i></a>"+
+				//"<button class="btn btn-default"><span onclick='editar("+event.id+")'class="fa fa-pencil"</span>"+
+				//"<span onclick='eliminar("+event.id+")' class=\"glyphicon\">&#xe014;</span>"+
+				"<a  onclick='eliminar("+event.id+")'><i style='color:red; ' class='fa fa-trash fa-1x'></i></a></div>"+
+				//"<button class="btn btn-default"><span onclick='eliminar("+event.id+")'class="fa fa-trash"</span>"+
+				//"<span class='tooltiptext'>"+event.title+"</span>"+
+				"</div>";
+		}else{
+			html +=
+				"<span class='fc-event-title'>" +
+				htmlEscape(event.title || '') +
+				"</span>" +
+				//"<span class='tooltiptext'>"+event.title+"</span>"+
+				"</div>";
+		}
+
 		if (segment.isEnd && isEventResizable(event)) {
 			html +=
 				"<div class='ui-resizable-handle ui-resizable-" + (isRTL ? 'w' : 'e') + "'>" +

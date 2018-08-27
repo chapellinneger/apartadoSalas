@@ -3969,7 +3969,7 @@ function AgendaEventRenderer() {
 		if (seg.isEnd) {
 			classes.push('fc-event-end');
 		}
-		//jorge Rengifo
+		//mod
 		if (event.id){
 			classes.push('fc-event-id');
 		}
@@ -5328,7 +5328,7 @@ function DayEventRenderer() {
 		if (segment.isEnd) {
 			classNames.push('fc-event-end');
 		}
-		//jorge Rengifo
+		//mod
 		if (event.id){
 			classNames.push('fc-event-id');
 		}

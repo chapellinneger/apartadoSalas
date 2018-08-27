@@ -4,6 +4,7 @@
 <link href="../static/css/bootstrap.min.css" rel="stylesheet">
 <link href='../static/css/fullcalendar.css' rel='stylesheet' />
 <link href='../static/css/fullcalendar.print.css' rel='stylesheet' media='print' />
+<link href='../static/fonts_1/css/font-awesome.css' rel='stylesheet' />
 <link href="../static/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
 
 
@@ -23,6 +24,13 @@
 		var m = date.getMonth();
 		var y = date.getFullYear();
 
+		$.post( "../controlador/apartadoSala_controller.php",{'accion':5}, function( data ) {
+				if(data.res == 0){
+					alert(data.mensaje);
+					window.location.href = 'http://www.oncop.gob.ve/site/vistas/';
+				}
+		},'json');
+
 		$.post( "../controlador/apartadoSala_controller.php",{'accion':1}, function( data ) {
 			for(var i=0; i < data.res.length; i++){
 				$('#salaEvento').append('<option value="'+data.res[i]['id_sala']+'">'+data.res[i]['descrip_sala']+'</option>');
@@ -33,16 +41,23 @@
 			for(var j=0; j < data.res2.length; j++){
 				$('#tipoEvento').append('<option value="'+data.res2[j]['id_tipo_curso']+'">'+data.res2[j]['descrip_tipo_curso']+'</option>');
 			}
+
 			$("#nombre_usuario").text(data.nombre);
 
 		},'json');
 		$("#txtDate").text(convertDate());
+		$('[data-toggle="tooltip"]').tooltip();
 
 		var id_sala = $('#sala').val();
 		$.post("../controlador/apartadoSala_controller.php",{'accion':2,'id_sala':id_sala},
 		 function(data){
 			for(var x=0; x < data.res.length; x++){
 				var fecha = data.res[x]['hora_ini'].replace(' ','T')
+				if(data.res[x]['num_cedula'] == data.session_ced.toString()){
+					var ver_edit_delete = true;
+				}else{
+					var ver_edit_delete = false;
+				}
 				calendar.fullCalendar('renderEvent',
 							{
 								id: data.res[x]['id_curso'],
@@ -50,11 +65,13 @@
 								start: new Date(fecha),
 								allDay: false,
 								className: 'important',
+								creado: data.res[x]['nombre_apellido'],
+								sala:data.res[x]['descrip_sala'],
+								see_edit_delete: ver_edit_delete,
 								//url: 'http://localhost/apartadoSalas/vista/calendario.html#myModal',
 							},
 							true // make the event "stick"
 						);
-
 			}
 		},'json');
 
@@ -72,6 +89,8 @@
 									start: new Date(fecha),
 									allDay: false,
 									className: 'important',
+									creado: data.res[x]['nombre_apellido'],
+									sala:data.res[x]['descrip_sala'],
 								},
 								true // make the event "stick"
 							);
@@ -118,7 +137,8 @@
 		var calendar =  $('#calendar').fullCalendar({
 			header: {
 				left: 'title',
-				center: 'agendaDay,agendaWeek,month',
+				//center: 'agendaDay,agendaWeek,month',
+				center: 'month',
 				right: 'prev,next today'
 			},
 			editable: true,
@@ -443,7 +463,8 @@
 			var fin_format_env = formattedDate(fin2,hora_fin[0].trim(),hora_fin[1].trim());
 
 			var url = "../controlador/reporte_inicial.php?sala_evento="+salaEvento+"&hora_inicio="+ini_format_env+"&hora_fin="+fin_format_env;
-			$(location).attr('href',url);
+			window.open(url);
+			//$(location).attr('href',url);
 		});
 	}
 
@@ -459,12 +480,9 @@
 			return true;
 		}
 	}
-	var cerrar_ventana = function(){
-		if (confirm("Close Window?")) {
-			//var ww = window.open(window.location, '_self');
-			//ww.close();
-			window.history.back();
-	  }
+	var cerrar_ventana = function(){}
+		var cerrar_ventana = function(){
+		window.close();
 	}
 </script>
 <script type="text/javascript">
@@ -580,22 +598,21 @@
 </br></br>
 <div class="register-content">
 <div class="row row-space-10">
-	<div>
-		 <strong id="txtDate">
+	<div style="color:#a29d9d; margin-left: 1014px; margin-top: 20.8px;">
+		 <h4><strong id="txtDate"></strong></h4>
 	</div>
 	<div style="margin-left: 76px; margin-top: 46.8px;">
 		<h1>BIENVENIDO</h1><p><b><strong id="nombre_usuario"></strong></b></p>
   </div>
-	<div class="form-group">
+  	<div class="form-group">
 		<div class="col-sm-2 btn-group" id="select_sala" style="margin-left: 76px; margin-top: 46.8px;">
 		   <h4>Cambiar Sala</h4><select id="sala" class="form-control form-control-lg" style="position: relative;margin-top: -36.2px;margin-left: 136px;">
 			</select>
 		</div>
 	</div>
-	<div class="btn-group" id="select_sala" style="position: relative;margin-top: 36.8px;margin-left: 375px;">
-	  <button type="button" class="btn btn-default" onclick="location.href='http://10.79.6.109/intranet/source/vistas/'"> INTRANET</button>
+	<div class="btn-group"  id="select_sala" style="position: relative;margin-top: 36.8px;margin-left: 441px;">
+	  <button type="button" class="btn btn-default" onclick="location.href='http://10.79.4.120/intranet_cert/source/vistas/'"> INTRANET</button>
 	  <button type="button" class="btn btn-default" onclick="reportes();">REPORTES</button>
-	  <button type="button" class="btn btn-default" onclick="cerrar_ventana();return false;" >SALIR</button>
 	</div>
 </div>
 
