@@ -15,6 +15,7 @@ $accion = $_POST['accion'];
 $apartadoSala_model = new apartadoSala_model();
 
 if($accion==0){
+
 	$titulo = $_POST['titulo'];
 	$descripcion = $_POST['descripcion'];
 	$sala_evento = $_POST['sala_evento'];
@@ -112,9 +113,23 @@ if($accion == 2){
 
 if($accion == 3){
 
+	$resultado_session = false;
+	if($cedula != ''){
+		$resultado_session = true;
+	}
+	if(!$resultado_session){
+		$response = array(
+		"cod" => false,
+		"mensaje" => "Debe Estar Logueado en la intranet para apartar una sala",
+		);
+		echo json_encode($response);//retorna el areglo $response
+		die();
+	}
+
 	$id = $_POST['id'];
 	$resultado = $apartadoSala_model->consulta_curso_id($id);
 	$response = array(
+		"cod" => true,
 		"res" => $resultado
 	);
 	echo json_encode($response);//retorna el areglo $response
@@ -122,6 +137,19 @@ if($accion == 3){
 }
 
 if($accion == 4){
+
+	$resultado_session = false;
+	if($cedula != ''){
+		$resultado_session = true;
+	}
+	if(!$resultado_session){
+		$response = array(
+		"res" => 0,
+		"mensaje" => "Debe Estar Logueado en la intranet para apartar una sala",
+		);
+		echo json_encode($response);//retorna el areglo $response
+		die();
+	}
 
 	$id = $_POST['id'];
 	$resultado = $apartadoSala_model->eliminar_curso($id);

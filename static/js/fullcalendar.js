@@ -4002,6 +4002,37 @@ function AgendaEventRenderer() {
 			"</div>" +
 			"</div>" +
 			"<div class='fc-event-bg'></div>";
+			if (!event.allDay && segment.isStart) {
+				html +=
+					"<div><span class='fc-event-time'>" +
+					htmlEscape(
+						formatDates(event.start, event.end, opt('timeFormat'))
+					) +
+					"m&nbsp;</span>";
+			}
+			if(event.see_edit_delete){
+				html +=
+					"<span class='fc-event-title'>" +
+					htmlEscape(event.title || '') +
+					"</span></div>" +
+					//"<i onclick='editar("+event.id+")' class="fa fa-pencil"></i>"+
+					//"<span onclick='editar("+event.id+")' style='color:green' class=\"glyphicon\">&#xf044;</span>"+
+
+					"<div  style='position: absolute; bottom: 1px; right: 10px;' ><a onclick='editar("+event.id+")'><i style='color:green' class='fa fa-edit fa-lg'></i></a>"+
+					//"<button class="btn btn-default"><span onclick='editar("+event.id+")'class="fa fa-pencil"</span>"+
+					//"<span onclick='eliminar("+event.id+")' class=\"glyphicon\">&#xe014;</span>"+
+					"<a  onclick='eliminar("+event.id+")'><i style='color:red; ' class='fa fa-trash fa-1x'></i></a></div>"+
+					//"<button class="btn btn-default"><span onclick='eliminar("+event.id+")'class="fa fa-trash"</span>"+
+					//"<span class='tooltiptext'>"+event.title+"</span>"+
+					"</div>";
+			}else{
+				html +=
+					"<span class='fc-event-title'>" +
+					htmlEscape(event.title || '') +
+					"</span></div>" +
+					//"<span class='tooltiptext'>"+event.title+"</span>"+
+					"</div>";
+			}
 		if (seg.isEnd && isEventResizable(event)) {
 			html +=
 				"<div class='ui-resizable-handle ui-resizable-s'>=</div>";
@@ -5363,7 +5394,7 @@ function DayEventRenderer() {
 			"<div class='fc-event-inner' id='"+event.id+"' data-toggle='tooltip' title='Titulo: "+event.title+"\nApartado Por: "+event.creado+"\nSala: "+event.sala+"'>";
 		if (!event.allDay && segment.isStart) {
 			html +=
-				"<span class='fc-event-time'>" +
+				"<div><span class='fc-event-time'>" +
 				htmlEscape(
 					formatDates(event.start, event.end, opt('timeFormat'))
 				) +
@@ -5373,14 +5404,14 @@ function DayEventRenderer() {
 			html +=
 				"<span class='fc-event-title'>" +
 				htmlEscape(event.title || '') +
-				"</span>" +
+				"</span></div></br>" +
 				//"<i onclick='editar("+event.id+")' class="fa fa-pencil"></i>"+
 				//"<span onclick='editar("+event.id+")' style='color:green' class=\"glyphicon\">&#xf044;</span>"+
 
 				"<div  style='position: absolute; bottom: 1px; right: 10px;' ><a onclick='editar("+event.id+")'><i style='color:green' class='fa fa-edit fa-lg'></i></a>"+
 				//"<button class="btn btn-default"><span onclick='editar("+event.id+")'class="fa fa-pencil"</span>"+
 				//"<span onclick='eliminar("+event.id+")' class=\"glyphicon\">&#xe014;</span>"+
-				"<a  onclick='eliminar("+event.id+")'><i style='color:red; ' class='fa fa-trash fa-1x'></i></a></div>"+
+				"&nbsp;&nbsp;<a  onclick='eliminar("+event.id+")'><i style='color:red; ' class='fa fa-trash fa-1x'></i></a></div>"+
 				//"<button class="btn btn-default"><span onclick='eliminar("+event.id+")'class="fa fa-trash"</span>"+
 				//"<span class='tooltiptext'>"+event.title+"</span>"+
 				"</div>";
@@ -5388,7 +5419,7 @@ function DayEventRenderer() {
 			html +=
 				"<span class='fc-event-title'>" +
 				htmlEscape(event.title || '') +
-				"</span>" +
+				"</span></div>" +
 				//"<span class='tooltiptext'>"+event.title+"</span>"+
 				"</div>";
 		}
