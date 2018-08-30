@@ -5,12 +5,14 @@
 	{
 		function Header()
 		{
-			$this->Image('./../static/images/Imagen_report.png', 175, 5, 25 );
+			$this->Image('./../static/images/Imagen_report.png', 175, 9, 25 );
 			$this->SetFont('Arial','B',8);
 			$this->Cell(15);
-			$this->Cell(23,1,'REPUBLICA BOLIVARIANA DE VENEZUELA',0,0,'C');
-			$this->Cell(5,8,'MINISTERIO DEL PODER POPULAR DE ECONOMIA Y FINANZAS',0,0,'C');
-			$this->Cell(-24,15,'OFICINA NACIONAL DE CONTABILIDAD PUBLICA',0,0,'C');
+			$this->Cell(32,3,'REPUBLICA BOLIVARIANA DE VENEZUELA',0,0,'C');
+			$this->Ln();
+			$this->Cell(23,3,'MINISTERIO DEL PODER POPULAR DE ECONOMIA Y FINANZAS',0,0,'L');
+			$this->Ln();
+			$this->Cell(23,3,'OFICINA NACIONAL DE CONTABILIDAD PUBLICA',0,0,'L');
 			$this->Ln(30);
 			$this->SetFont('Arial','B',15);
 			$this->Cell(70);

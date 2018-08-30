@@ -3993,7 +3993,7 @@ function AgendaEventRenderer() {
 				skinCss +
 				"'" +
 			">" +
-			"<div class='fc-event-inner' id='"+event.id+"' data-toggle='tooltip' title='Titulo: "+event.title+"\nApartado Por: "+event.creado+"\nSala: "+event.sala+"'>" +
+			"<div class='fc-event-inner' id='"+event.id+"' data-toggle='tooltip' title='Titulo: "+event.title+"\nApartado por: "+event.creado+"\nSala: "+event.sala+"'>" +
 			"<div class='fc-event-time'>" +
 			htmlEscape(formatDates(event.start, event.end, opt('timeFormat'))) +
 			"</div>" +
@@ -4019,7 +4019,7 @@ function AgendaEventRenderer() {
 					//"<span onclick='editar("+event.id+")' style='color:green' class=\"glyphicon\">&#xf044;</span>"+
 
 					"<div  style='position: absolute; bottom: 1px; right: 10px;' ><a onclick='editar("+event.id+")'><i style='color:green' class='fa fa-edit fa-lg'></i></a>"+
-					//"<button class="btn btn-default"><span onclick='editar("+event.id+")'class="fa fa-pencil"</span>"+
+					//"<button class=''btn btn-default'><span onclick='editar("+event.id+")'class="fa fa-pencil"</span>"+
 					//"<span onclick='eliminar("+event.id+")' class=\"glyphicon\">&#xe014;</span>"+
 					"<a  onclick='eliminar("+event.id+")'><i style='color:red; ' class='fa fa-trash fa-1x'></i></a></div>"+
 					//"<button class="btn btn-default"><span onclick='eliminar("+event.id+")'class="fa fa-trash"</span>"+
@@ -5391,10 +5391,10 @@ function DayEventRenderer() {
 				skinCss +
 				"'" +
 			">" +
-			"<div class='fc-event-inner' id='"+event.id+"' data-toggle='tooltip' title='Titulo: "+event.title+"\nApartado Por: "+event.creado+"\nSala: "+event.sala+"'>";
+			"<div class='fc-event-inner' id='"+event.id+"' data-toggle='tooltip' title='Titulo: "+event.title+"\nApartado por: "+event.creado+"\nSala: "+event.sala+"'>";
 		if (!event.allDay && segment.isStart) {
 			html +=
-				"<div><span class='fc-event-time'>" +
+				"<div onclick='ver_tooltip("+event.id+")' ><span class='fc-event-time'>" +
 				htmlEscape(
 					formatDates(event.start, event.end, opt('timeFormat'))
 				) +
@@ -5409,7 +5409,7 @@ function DayEventRenderer() {
 				//"<span onclick='editar("+event.id+")' style='color:green' class=\"glyphicon\">&#xf044;</span>"+
 
 				"<div  style='position: absolute; bottom: 1px; right: 10px;' ><a onclick='editar("+event.id+")'><i style='color:green' class='fa fa-edit fa-lg'></i></a>"+
-				//"<button class="btn btn-default"><span onclick='editar("+event.id+")'class="fa fa-pencil"</span>"+
+				//"<button class='btn btn-default'><span onclick='editar("+event.id+")' class='fa fa-pencil'</span>"+
 				//"<span onclick='eliminar("+event.id+")' class=\"glyphicon\">&#xe014;</span>"+
 				"&nbsp;&nbsp;<a  onclick='eliminar("+event.id+")'><i style='color:red; ' class='fa fa-trash fa-1x'></i></a></div>"+
 				//"<button class="btn btn-default"><span onclick='eliminar("+event.id+")'class="fa fa-trash"</span>"+

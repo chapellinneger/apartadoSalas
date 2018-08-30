@@ -29,7 +29,7 @@ if($accion==0){
 	if($resultado_existencia){
 		$response = array(
 			"cod" => false,
-			"mensaje" => 'Ya existe un evento cargado en esta hora',
+			"mensaje" => 'Ya existe una reserva registrada a esta hora',
 			);
 		echo json_encode($response);//retorna el areglo $response
 		die();
@@ -72,9 +72,9 @@ if($accion==0){
 
 	if ($resultado){
 		$cod = true;
-		$mensaje = 'Dato Cargado Correctamente !!!';
+		$mensaje = 'Solicitud Procesada';
 	}else{
-		$mensaje = 'Error al insetar la Sala !!!';
+		$mensaje = 'Error Procesando la Solicitud';
 	}
 
 	$response = array(
@@ -120,7 +120,7 @@ if($accion == 3){
 	if(!$resultado_session){
 		$response = array(
 		"cod" => false,
-		"mensaje" => "Debe Estar Logueado en la intranet para apartar una sala",
+		"mensaje" => "No posee sesión activa en la intranet para reservar sala",
 		);
 		echo json_encode($response);//retorna el areglo $response
 		die();
@@ -145,7 +145,7 @@ if($accion == 4){
 	if(!$resultado_session){
 		$response = array(
 		"res" => 0,
-		"mensaje" => "Debe Estar Logueado en la intranet para apartar una sala",
+		"mensaje" => "No posee sesión activa en la intranet para reservar sala",
 		);
 		echo json_encode($response);//retorna el areglo $response
 		die();
@@ -155,11 +155,11 @@ if($accion == 4){
 	$resultado = $apartadoSala_model->eliminar_curso($id);
 	if($resultado){
 		$response = array(
-		"mensaje" => "Datos eliminado correctamente!!!"
+		"mensaje" => "Reserva Anulada"
 		);
 	}else{
 		$response = array(
-		"mensaje" => "Datos no fueron eliminados!!!"
+		"mensaje" => "Reserva de Salas no fue Anulada"
 		);
 	}
 
@@ -175,7 +175,7 @@ if($accion == 5){
 	if(!$resultado_session){
 		$response = array(
 		"res" => 0,
-		"mensaje" => "Debe Estar Logueado en la intranet para apartar una sala",
+		"mensaje" => "No posee sesión activa en la intranet para reservar sala",
 		);
 	}else{
 		$response = array(

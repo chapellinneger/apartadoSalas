@@ -76,7 +76,10 @@ class apartadoSala_model  extends clase_generica{
 
 	function consulta_curso_id($id){
 		$datos_generico = new clase_generica();
-		$sql = "SELECT * FROM reserva_salas_nueva.curso WHERE id_curso = $id";
+		$sql = "SELECT a.*, b.*,c.* FROM reserva_salas_nueva.curso as a
+						inner join reserva_salas_nueva.salas as b on b.id_sala = a.id_sala
+						inner join reserva_salas_nueva.tipo_curso as c on c.id_tipo_curso = a.id_tipo_curso
+						WHERE a.id_curso = $id";
 		//echo $sql;
 		$result = $datos_generico->ConsultaG($sql);
 		return $result;
@@ -122,15 +125,18 @@ class apartadoSala_model  extends clase_generica{
 
 	function reporte_existencia_curso($hora_ini,$hora_fin, $id_sala){
 		$datos_generico = new clase_generica();
-		$sql = "SELECT a.* FROM reserva_salas_nueva.curso
-						as a WHERE
+		$sql = "SELECT a.*,b.*,c.* FROM reserva_salas_nueva.curso as a
+						inner join reserva_salas_nueva.salas as b on b.id_sala = a.id_sala
+						inner join reserva_salas_nueva.tipo_curso as c on c.id_tipo_curso = a.id_tipo_curso
+						WHERE
 						a.id_sala = $id_sala AND
 						a.hora_ini BETWEEN '$hora_ini' AND '$hora_fin'
 						or
 						a.id_sala = $id_sala AND
-						a.hora_fin BETWEEN '$hora_ini' AND '$hora_fin';";
+						a.hora_fin BETWEEN '$hora_ini' AND '$hora_fin' ORDER BY a.hora_ini DESC;";
 		//echo $sql;
 		$result = $datos_generico->ConsultaG($sql);
+		//echo $result[0][1];
 		return $result;
 	}
 

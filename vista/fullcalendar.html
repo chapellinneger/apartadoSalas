@@ -37,11 +37,12 @@
 					  showCancelButton: false,
 					  confirmButtonColor: '#3085d6',
 					  cancelButtonColor: '#d33',
-					  confirmButtonText: 'OK',
-						cancelButtonText: 'cancelar'
+					  confirmButtonText: 'Aceptar',
+					  cancelButtonText: 'Cancelar'
 					}).then((result) => {
 					  if (result.value) {
-					    window.location.href = 'http://www.oncop.gob.ve/site/vistas/';
+					    //window.location.href = 'http://www.oncop.gob.ve/site/vistas/';
+					    window.location.href = 'http://10.79.4.120/intranet_cert/source/';
 					  }
 					})
 					//alert(data.mensaje);
@@ -200,7 +201,7 @@
 				}
 				calendar.fullCalendar('unselect');*/
 				if(!verifica_fecha_actual(start)){
-					swal('Alerta','No Puede reservar sala para dias menores a hoy','warning');
+					swal('Verificar','No puede realizar una reserva de sala para días anteriores a la fecha actual','warning');
 					return false;
 				}
 				$('#tituloEvento').val('');
@@ -257,7 +258,7 @@
 					var fin_format_env = formattedDate(fin,val_hora_fin.trim(),minuto_fin);
 
 					if(!validar_horas(val_hora_ini+':'+minuto_init, val_hora_fin+':'+minuto_fin)){
-						swal('Alerta','La hora inicial no puede ser mayor a la hora final','warning');
+						swal('Verificar','La hora de inicio no puede ser mayor a la hora final','warning');
 						return false;
 					}
 					var id = 0;
@@ -288,15 +289,18 @@
 						}
 						$.post( "../controlador/apartadoSala_controller.php",array_insert, function( data ) {
 							if(data.cod){
-								alert(data.mensaje );
+								//alert(data.mensaje );
+								swal('Guardar',  data.mensaje, 'success');
 								setTimeout(function()
 						    {
-						        location.reload();
+						       location.reload();
 						    }, 1000);
 							}else{
-								alert(data.mensaje );
-								if(data.mensaje.indexOf('Logueado') != -1){
-									  window.location.href = 'http://www.oncop.gob.ve/site/vistas/';
+								//alert(data.mensaje );
+								swal('Guardar',  data.mensaje,  'error');
+								if(data.mensaje.indexOf('activa') != -1){
+									  //window.location.href = 'http://www.oncop.gob.ve/site/vistas/';
+									  window.location.href = 'http://10.79.4.120/intranet_cert/source/';
 								}
 								setTimeout(function()
 						    {
@@ -432,9 +436,12 @@
 					}else{
 						//alert(data.mensaje);
 						swal('Atención',data.mensaje,'question');
-						window.location.href = 'http://www.oncop.gob.ve/site/vistas/';
+						if(data.mensaje.indexOf('activa') != -1){
+							//window.location.href = 'http://www.oncop.gob.ve/site/vistas/';
+							window.location.href = 'http://10.79.4.120/intranet_cert/source/';
+						}
 						/*
-						if(data.mensaje.indexOf('Logueado') != -1){
+						if(data.mensaje.indexOf('activa') != -1){
 							swal({
 								title: 'Atención',
 								text: data.mensaje,
@@ -443,7 +450,7 @@
 								confirmButtonColor: '#3085d6',
 								cancelButtonColor: '#d33',
 								confirmButtonText: 'Aceptar',
-								cancelButtonText: 'cancelar'
+								cancelButtonText: 'Cancelar'
 							}).then((result) => {
 								if (result.value) {
 									window.location.href = 'http://www.oncop.gob.ve/site/vistas/';
@@ -507,7 +514,7 @@
 					var fin_format_env = formattedDate(fin,val_hora_fin.trim(),minuto_fin);
 
 					if(!validar_horas(val_hora_ini+':'+minuto_init, val_hora_fin+':'+minuto_fin)){
-						swal('Alerta','La hora inicial no puede ser mayor a la hora final','warning');
+						swal('Verificar','La hora de inicio no puede ser mayor a la hora final','warning');
 						return false;
 					}
 
@@ -530,7 +537,8 @@
 						}
 						$.post( "../controlador/apartadoSala_controller.php",array_update, function( data ) {
 							if(data.cod){
-								alert(data.mensaje );
+								//alert(data.mensaje );
+								swal('Actualizar',  data.mensaje, 'success');
 								setTimeout(function()
 						    {
 						        location.reload();
@@ -549,22 +557,23 @@
 
 		swal({
 			title: 'Atención',
-			text: 'Desea Eliminar?',
+			text: 'Desea Anular la Reserva',
 			type: 'warning',
 			showCancelButton: true,
 			confirmButtonColor: '#3085d6',
 			cancelButtonColor: '#d33',
 			confirmButtonText: 'Aceptar',
-			cancelButtonText: 'cancelar'
+			cancelButtonText: 'Cancelar'
 		}).then((result) => {
 			if (result.value) {
 				$.post("../controlador/apartadoSala_controller.php",
 						{'accion':4,'id':id},
 						function(data){
-							swal('Atención',data.mensaje,'question');
+							swal('Atención',data.mensaje,'success');
 							//alert(data.mensaje);
-							if(data.mensaje.indexOf('Logueado') != -1){
-									window.location.href = 'http://www.oncop.gob.ve/site/vistas/';
+							if(data.mensaje.indexOf('activa') != -1){
+									//window.location.href = 'http://www.oncop.gob.ve/site/vistas/';
+									window.location.href = 'http://10.79.4.120/intranet_cert/source/';
 							}
 							setTimeout(function()
 							{
@@ -586,12 +595,14 @@
 			var fecha_fin = $('#fecha_hora_fin').val();
 
 			if(fecha_ini == ''){
-				alert('Debe ingresar una fecha y hora de inicio');
+				//alert('Debe ingresar una fecha y hora de inicio');
+				swal('Debe ingresar una fecha y hora de inicio');
 				return false
 			}
 
 			if(fecha_fin == ''){
-				alert('Debe ingresar una fecha y hora de Fin');
+				//alert('Debe ingresar una fecha y hora de Fin');
+				swal('Debe ingresar una fecha y hora de Fin');
 				return false
 			}
 
@@ -631,6 +642,59 @@
 	var cerrar_ventana = function(){}
 		var cerrar_ventana = function(){
 		window.close();
+	}
+
+	var ver_tooltip = function(id){
+		$.post("../controlador/apartadoSala_controller.php",
+				{'accion':3,'id':id},
+				function(data){
+					if(data.cod){
+						var hora_ini = data.res[0]['hora_ini'];
+						hora_ini = hora_ini.split(" ");
+						var fecha_ini = formattedDateSinple(hora_ini[0]);
+						hora_ini = hora_ini[1].substring(0,5)
+						var aux_hora_ini = hora_ini.split(':');
+						if(aux_hora_ini[0] > 12){
+							var reaux_hora_ini = convertir_formato_not_mil(aux_hora_ini[0]);
+							hora_ini = reaux_hora_ini + ':' + aux_hora_ini[1];
+							hora_ini = hora_ini +' PM';
+						}else{
+							hora_ini = hora_ini +' AM';
+						}
+						var hora_fin = data.res[0]['hora_fin'];
+						hora_fin = hora_fin.split(" ");
+						var fecha_fin = formattedDateSinple(hora_fin[0]);
+						hora_fin = hora_fin[1].substring(0,5)
+						var aux_hora_fin = hora_fin.split(':');
+						if(aux_hora_fin[0] > 12){
+							var reaux_hora_fin = convertir_formato_not_mil(aux_hora_fin[0]);
+							hora_fin = reaux_hora_fin + ':' + aux_hora_fin[1];
+							hora_fin = hora_fin +' PM';
+						}else{
+							hora_fin = hora_fin +' AM';
+						}
+						document.getElementById('titulo_fecha').innerHTML = formattedDateSinple(fecha_ini);
+						$('#tituloEvento_tooltip').text(data.res[0]['titulo_curso']);
+						$('#descripEvento_tooltip').text(data.res[0]['descrip_curso']);
+						$('#tipoEvento_tooltip').text(data.res[0]['descrip_tipo_curso']);
+						$('#salaEvento_re_tooltip').text(data.res[0]['descrip_sala']);
+						$('#fecha_hora_ini_tooltip').text(fecha_ini+' '+hora_ini);
+						$('#fecha_hora_fin_tooltip').text(fecha_fin+' '+hora_fin);
+						$('#apratda_por_tooltip').text(data.res[0]['nombre_apellido'])
+					}else{
+						//alert(data.mensaje);
+						swal('Atención',data.mensaje,'question');
+						if(data.mensaje.indexOf('activa') != -1){
+							//window.location.href = 'http://www.oncop.gob.ve/site/vistas/';
+							window.location.href = 'http://10.79.4.120/intranet_cert/source/';
+
+						}
+					}
+
+				},'json');
+				$('#ModalTooltip').modal({
+								show: 'true'
+				});
 	}
 </script>
 <script type="text/javascript">
@@ -731,7 +795,7 @@ function convertir_formato_mil(minuto){
 					minuto = '23';
 					break;
 			case '12':
-					minuto = '00';
+					minuto = '12';
 	}
 	return minuto;
 }
@@ -771,7 +835,7 @@ function convertir_formato_not_mil(minuto){
 			case '23':
 					minuto = '11';
 					break;
-			case '00':
+			case '12':
 					minuto = '12';
 	}
 	return minuto;
@@ -848,11 +912,12 @@ function validar_horas(hora_ini,hora_fin){
 
 	#calendar {
 /* 		float: right; */
-        margin: 0 auto;
+    margin: 0 auto;
 		width: 900px;
 		background-color: #FFFFFF;
 		border-radius: 6px;
-        box-shadow: 0 1px 2px #090909;
+    box-shadow: 0 1px 2px #090909;
+		margin-bottom: 70px;
 		}
 		.tooltip.top .tooltip-inner {
     background-color:red;
@@ -861,7 +926,7 @@ function validar_horas(hora_ini,hora_fin){
 </head>
 <body>
 	<header>
-    <div id="header" style="width: 100% !important;background: blue;position: fixed;">
+    <div id="header" style="width: 100% !important;background: blue;position: fixed;z-index:100;">
           <div class="top-sect" style="background: #035c94;">
                <img src="../static/images/baner-gobierno-MEFBP-.png" style="width: 1142px; position: relative;top: -1.2px;display: inline-table;left: 14px;">
           </div>
@@ -900,7 +965,7 @@ function validar_horas(hora_ini,hora_fin){
 		 <div class="modal-content">
 			 <div class="modal-header">
 				 <button type="button" class="close" data-dismiss="modal">&times;</button>
-				 <h4 class="modal-title">Asignaci&oacute;n de sala <span id="titulo_fecha"></span></h4>
+				 <h4 class="modal-title">Generar Reserva de Sala <span id="titulo_fecha"></span></h4>
 			 </div>
 			 <div class="modal-body">
 		 <div class="row">
@@ -965,8 +1030,8 @@ function validar_horas(hora_ini,hora_fin){
 
 			 </div>
 			 <div class="modal-footer">
-		 <button type="button" class="btn btn-default" id="guadar">Guardar</button>
-				 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		 <button type="button" class="btn btn-primary" id="guadar">Guardar</button>
+				 <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
 			 </div>
 		 </div>
 	 </div>
@@ -978,7 +1043,7 @@ function validar_horas(hora_ini,hora_fin){
 	 		 <div class="modal-content">
 	 			 <div class="modal-header">
 					 <button type="button" class="close" data-dismiss="modal">&times;</button>
-					 <h4 class="modal-title">Reporte de asignaci&oacute;n de sala</h4>
+					 <h4 class="modal-title">Reporte de Reserva de sala</h4>
 				 </div>
 				 <div class="modal-body">
 					 <div class="row">
@@ -1013,13 +1078,68 @@ function validar_horas(hora_ini,hora_fin){
 					 </div>
 				 </div>
 				 <div class="modal-footer">
-			     <button type="button" class="btn btn-default" id="genera_reporte">Generar Reporte</button>
-					 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			     <button type="button" class="btn btn-primary" id="genera_reporte">Generar Reporte</button>
+					 <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
 				 </div>
 			 </div>
 		 </div>
 	 </div>
 	 <!--Fin myModal-->
+	 <!-- Modal tooltip-->
+		  <div class="modal fade" id="ModalTooltip" role="dialog">
+		 	 <div class="modal-dialog modal-lg">
+		 		 <div class="modal-content">
+		 			 <div class="modal-header">
+						 <button type="button" class="close" data-dismiss="modal">&times;</button>
+						 <h4 class="modal-title">Sala apartada por: <span id="apratda_por_tooltip"></span></h4>
+					 </div>
+					 <div class="modal-body">
+						 <div class="row">
+							 <div class="form-group">
+								 <div class="col-sm-12">
+									 <label for="tituloEvento_tooltip">T&iacute;tulo:</label>
+									 <span id="tituloEvento_tooltip"></span>
+								 </div>
+							 </div>
+							 <div class="form-group">
+							 </br>
+								 <div class="col-sm-12">
+									 <label for="descripEvento_tooltip">Descripci&oacute;n:</label>
+									 <span id="descripEvento_tooltip"></span>
+								 </div>
+							 </div>
+							 </br>
+							 <div class="form-group">
+								 <div class="col-sm-3">
+									 <label for="tipoEvento">Tipo de Evento:</label>
+									 <span id="tipoEvento_tooltip"></span>
+								 </div>
+								 <div class="col-sm-3">
+									 <label for="salaEvento_re_tooltip">Nombre Sala:</label>
+									 <span id="salaEvento_re_tooltip"></span>
+								 </div>
+								 <div class='col-sm-3'>
+									 <div class="form-group">
+										 <label for="fecha_hora_ini_tooltip">Fecha y Hora Inicio:</label>
+										 <span id="fecha_hora_ini_tooltip"></span>
+									 </div>
+								 </div>
+								 <div class='col-sm-3'>
+									 <div class="form-group">
+										 <label for="horafin">Fecha y Hora Fin:</label>
+										 <span id="fecha_hora_fin_tooltip"></span>
+									 </div>
+								 </div>
+							 </div>
+						 </div>
+					 </div>
+					 <div class="modal-footer">
+						 <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+					 </div>
+				 </div>
+			 </div>
+		 </div>
+		 <!--Fin myModal-->
 
   </div>
 </div>
