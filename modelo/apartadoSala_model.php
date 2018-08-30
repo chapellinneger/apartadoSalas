@@ -123,10 +123,10 @@ class apartadoSala_model  extends clase_generica{
 						FROM
 						reserva_salas_nueva.curso as a
 						WHERE
-						a.id_sala = 1 AND
+						a.id_sala = $id_sala AND
 						'$hora_ini' BETWEEN a.hora_ini AND a.hora_fin $where_2
 						or
-						a.id_sala = 1 AND
+						a.id_sala = $id_sala AND
 						'$hora_fin' BETWEEN a.hora_ini AND a.hora_fin $where_2;";
 		//echo $sql;
 		$result = $datos_generico->ConsultaG($sql);

@@ -290,22 +290,35 @@
 						$.post( "../controlador/apartadoSala_controller.php",array_insert, function( data ) {
 							if(data.cod){
 								//alert(data.mensaje );
-								swal('Guardar',  data.mensaje, 'success');
-								setTimeout(function()
-						    {
-						       location.reload();
-						    }, 1000);
+								swal({
+									title: 'Guardar',
+									text: data.mensaje,
+									type: 'success',
+									showCancelButton: false,
+									confirmButtonColor: '#3085d6',
+									cancelButtonColor: '#d33',
+									confirmButtonText: 'Aceptar',
+								}).then((result) => {
+									location.reload();
+								})
 							}else{
 								//alert(data.mensaje );
-								swal('Guardar',  data.mensaje,  'error');
-								if(data.mensaje.indexOf('activa') != -1){
-									  //window.location.href = 'http://www.oncop.gob.ve/site/vistas/';
-									  window.location.href = 'http://10.79.4.120/intranet_cert/source/';
-								}
-								setTimeout(function()
-						    {
-						        location.reload();
-						    }, 500);
+								//swal('Guardar',  data.mensaje,  'error');
+								swal({
+									title: 'Guardar',
+									text: data.mensaje,
+									type: 'error',
+									showCancelButton: false,
+									confirmButtonColor: '#3085d6',
+									cancelButtonColor: '#d33',
+									confirmButtonText: 'Aceptar',
+								}).then((result) => {
+									if(data.mensaje.indexOf('activa') != -1){
+										  window.location.href = 'http://10.79.4.120/intranet_cert/source/';
+									}
+									location.reload();
+								})
+
 							}
 
 						},'json');
@@ -537,12 +550,17 @@
 						}
 						$.post( "../controlador/apartadoSala_controller.php",array_update, function( data ) {
 							if(data.cod){
-								//alert(data.mensaje );
-								swal('Actualizar',  data.mensaje, 'success');
-								setTimeout(function()
-						    {
-						        location.reload();
-						    }, 1000);
+								swal({
+									title: 'Actualizar',
+									text: data.mensaje,
+									type: 'success',
+									showCancelButton: false,
+									confirmButtonColor: '#3085d6',
+									cancelButtonColor: '#d33',
+									confirmButtonText: 'Aceptar',
+								}).then((result) => {
+									location.reload();
+								})
 							}
 						},'json');
 						title = '';
