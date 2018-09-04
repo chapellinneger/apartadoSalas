@@ -15,7 +15,7 @@ class apartadoSala_model  extends clase_generica{
 		$result = $datos_generico->ConsultaG($sql);
 		//echo $result;
 		if($result){
-			return true;
+			return $result;
 	                //echo 'paso bien';
 		}else {
 			return false;

@@ -24,23 +24,29 @@ $pdf->Ln();
 
 $pdf->SetFont('Arial','B',10);
 //$pdf->Cell(35,6,'SALA RESERVADA',1,0,'C',1);
-$pdf->Cell(35,6,'TITULO',1,0,'C',1);
+$pdf->Cell(30,6,'TITULO',1,0,'C',1);
 $pdf->Cell(30,6,'RESPONSABLE',1,0,'C',1);
-$pdf->Cell(30,6,'FECHA INCIO',1,0,'C',1);
+$pdf->Cell(30,6,'FECHA INICIO',1,0,'C',1);
 $pdf->Cell(30,6,'FECHA FIN',1,0,'C',1);
-$pdf->Cell(60,6,'DESCRIPCION CURSO',1,0,'C',1);
+$pdf->Cell(30,6,'TIPO EVENTO',1,0,'C',1);
+$pdf->Cell(45,6,'DESCRIPCION',1,0,'C',1);
 $pdf->Ln();//Salto de línea para generar otra fila
 
 
-$pdf->SetFont('Arial','',8);
 
 foreach ($resultado as $data) {
+  $date_ini = date_create($data['hora_ini']);
+  $date_fin = date_create($data['hora_fin']);
+  $pdf->SetFont('Arial','',6);
   //$pdf->Cell(35,6,utf8_decode($data['descrip_sala']),1,0,'C');
-  $pdf->Cell(35,6,utf8_decode($data['titulo_curso']),1,0,'C');
+  $pdf->Cell(30,6,utf8_decode(strtolower($data['titulo_curso'])),1,0,'C');
+  $pdf->SetFont('Arial','',8);
   $pdf->Cell(30,6,utf8_decode($data['nombre_apellido']),1,0,'C');
-  $pdf->Cell(30,6,$data['hora_ini'],1,0,'C');
-  $pdf->Cell(30,6,$data['hora_fin'],1,0,'C');
-  $pdf->Cell(60,6,utf8_decode($data['descrip_curso']),1,1,'C');
+  $pdf->Cell(30,6,date_format($date_ini,"d/m/Y H:i:s"),1,0,'C');
+  $pdf->Cell(30,6,date_format($date_fin,"d/m/Y H:i:s"),1,0,'C');
+  $pdf->Cell(30,6,utf8_decode($data['descrip_tipo_curso']),1,0,'C');
+  $pdf->SetFont('Arial','',6);
+  $pdf->Cell(45,6,utf8_decode(strtolower($data['descrip_curso'])),1,1,'C');
 
 }
 

@@ -6,6 +6,8 @@
 <link href='../static/css/fullcalendar.css' rel='stylesheet' />
 <link href='../static/css/fullcalendar.print.css' rel='stylesheet' media='print' />
 <link href='../static/fonts_1/css/font-awesome.css' rel='stylesheet' />
+<link href="../static/css/bootstrap-datetimepicker.css" rel="stylesheet">
+<link href="../static/css/bootstrap-datetimepicker-standalone.css" rel="stylesheet">
 <link href="../static/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
 <link href="../static/css/sweetalert2.min.css" rel="stylesheet">
 
@@ -51,8 +53,11 @@
 		},'json');
 
 		$.post( "../controlador/apartadoSala_controller.php",{'accion':1}, function( data ) {
+			$('#salaEvento').val(data.res[0]['id_sala']);
+			$('#salaEvento_span').text(data.res[0]['descrip_sala']);
 			for(var i=0; i < data.res.length; i++){
-				$('#salaEvento').append('<option value="'+data.res[i]['id_sala']+'">'+data.res[i]['descrip_sala']+'</option>');
+				//$('#salaEvento').append('<option value="'+data.res[i]['id_sala']+'">'+data.res[i]['descrip_sala']+'</option>');
+				$('#salaEventoEdit').append('<option value="'+data.res[i]['id_sala']+'">'+data.res[i]['descrip_sala']+'</option>');
 				$('#salaEvento_re').append('<option value="'+data.res[i]['id_sala']+'">'+data.res[i]['descrip_sala']+'</option>');
 				$('#sala').append('<option value="'+data.res[i]['id_sala']+'">'+data.res[i]['descrip_sala']+'</option>');
 			}
@@ -67,7 +72,18 @@
 		$("#txtDate").text(convertDate());
 		$('[data-toggle="tooltip"]').tooltip();
 
-		var id_sala = $('#sala').val();
+		var getParameterByName = function(name) {
+	    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+	    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+	    results = regex.exec(location.search);
+	    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+		}
+
+		if(getParameterByName('salaId')){
+			var id_sala = getParameterByName('salaId');
+		}else{
+			var id_sala = $('#sala').val();
+		}
 		$.post("../controlador/apartadoSala_controller.php",{'accion':2,'id_sala':id_sala},
 		 function(data){
 			for(var x=0; x < data.res.length; x++){
@@ -96,6 +112,8 @@
 
 		$('#sala').on('change',function(){
 			var id = $('#sala').val();
+			$('#salaEvento').val(id);
+			$('#salaEvento_span').text($('#sala option[value="'+id+'"]').text());
 			calendar.fullCalendar('removeEvents');
 			$.post("../controlador/apartadoSala_controller.php",{'accion':2,'id_sala':id},
 			 function(data){
@@ -207,7 +225,8 @@
 				$('#tituloEvento').val('');
 				$('#descripEvento').val('');
 				$('#tipoEvento').val('');
-				$('#salaEvento').val('');
+				$('#salaEvento').val($('#sala').val());
+				$('#salaEvento_span').text($('#sala option[value="'+$('#sala').val()+'"]').text());
 				$('#horaini').val('');
 				$('#horafin').val('');
 				$('#id_curso').val('');
@@ -216,6 +235,11 @@
 				});
 
 				$('#guadar').on("click",function(){
+					if(!valid_form()){
+						swal('Verificar','Los campos en rojo son requeridos','warning');
+						return false;
+						//$('.has-error').removeClass('has-error');
+					}
 					if($('#horaini').val().indexOf('AM') != -1){
 						var horario = 'AM'
 					}else{
@@ -234,8 +258,8 @@
 					var salaEvento = $('#salaEvento').val();
 					var hora_init = $('#horaini').val().split(":");
 					var val_hora_ini = hora_init[0];
-					if(val_hora_ini < 10){
-						val_hora_ini = '0'+val_hora_ini;
+					if(parseInt(val_hora_ini) < 10){
+						val_hora_ini = '0'+parseInt(val_hora_ini);
 					}
 					if(horario == 'PM'){
 							val_hora_ini = convertir_formato_mil(val_hora_ini);
@@ -246,8 +270,8 @@
 					var ini_format_env = formattedDate(inicio,val_hora_ini.trim(),minuto_init);
 					var hora_fin = $('#horafin').val().split(":");
 					var val_hora_fin = hora_fin[0];
-					if(val_hora_fin < 10){
-						val_hora_fin = '0'+val_hora_fin;
+					if(parseInt(val_hora_fin) < 10){
+						val_hora_fin = '0'+parseInt(val_hora_fin);
 					}
 					if(horario2 == 'PM'){
 							val_hora_fin = convertir_formato_mil(val_hora_fin);
@@ -267,13 +291,21 @@
 						id = $('#id_curso').val();
 					}
 
+					if(id != 0){
+						return false;
+					}else{
+						var id_div = 'modi';
+					}
+
 					if (title != '') {
 						calendar.fullCalendar('renderEvent',
 							{
+								id: id_div,
 								title: title,
 								start: inicio,
 								end: fin,
-								allDay: allDay
+								allDay: allDay,
+								className: 'important'
 							},
 							true // make the event "stick"
 						);
@@ -289,7 +321,7 @@
 						}
 						$.post( "../controlador/apartadoSala_controller.php",array_insert, function( data ) {
 							if(data.cod){
-								//alert(data.mensaje );
+								//alert(data.res.id_evento);
 								swal({
 									title: 'Guardar',
 									text: data.mensaje,
@@ -299,7 +331,7 @@
 									cancelButtonColor: '#d33',
 									confirmButtonText: 'Aceptar',
 								}).then((result) => {
-									location.reload();
+									return change_load_sala(data.res.id_evento,'insert');
 								})
 							}else{
 								//alert(data.mensaje );
@@ -410,6 +442,10 @@
 				{'accion':3,'id':id},
 				function(data){
 					if(data.cod){
+
+						$('#salaEventoEdit').attr('style','display:display')
+						$('#salaEvento_span').attr('style','display:none')
+
 						var hora_ini = data.res[0]['hora_ini'];
 						hora_ini = hora_ini.split(" ");
 						var fecha_ini = hora_ini[0];
@@ -439,6 +475,7 @@
 						$('#descripEvento').val(data.res[0]['descrip_curso']);
 						$('#tipoEvento').val(data.res[0]['id_tipo_curso']);
 						$('#salaEvento').val(data.res[0]['id_sala']);
+						$('#salaEventoEdit').val(data.res[0]['id_sala']);
 						$('#horaini').val(hora_ini);
 						$('#horafin').val(hora_fin);
 						$('#id_curso').val(data.res[0]['id_curso']);
@@ -503,8 +540,8 @@
 					var end = new Date(fecha_fin);
 					var hora_init = $('#horaini').val().split(":");
 					var val_hora_ini = hora_init[0];
-					if(val_hora_ini < 10){
-						val_hora_ini = '0'+val_hora_ini;
+					if(parseInt(val_hora_ini) < 10){
+						val_hora_ini = '0'+parseInt(val_hora_ini);
 					}
 					if(horario == 'PM'){
 							val_hora_ini = convertir_formato_mil(val_hora_ini);
@@ -515,8 +552,8 @@
 					var ini_format_env = formattedDate(inicio,val_hora_ini.trim(),minuto_init);
 					var hora_fin = $('#horafin').val().split(":");
 					var val_hora_fin = hora_fin[0];
-					if(val_hora_fin < 10){
-						val_hora_fin = '0'+val_hora_fin;
+					if(parseInt(val_hora_fin) < 10){
+						val_hora_fin = '0'+parseInt(val_hora_fin);
 					}
 					if(horario2 == 'PM'){
 							val_hora_fin = convertir_formato_mil(val_hora_fin);
@@ -559,8 +596,10 @@
 									cancelButtonColor: '#d33',
 									confirmButtonText: 'Aceptar',
 								}).then((result) => {
-									location.reload();
+									 window.location.href = '../vista/fullcalendar.html?salaId='+salaEvento;
 								})
+							}else{
+								swal('Actualizar',  data.mensaje,  'error');
 							}
 						},'json');
 						title = '';
@@ -714,6 +753,68 @@
 								show: 'true'
 				});
 	}
+
+	var change_load_sala = function(id,type_event){
+
+		$.post("../controlador/apartadoSala_controller.php",{'accion':3,'id':id},
+		 function(data){
+			for(var x=0; x < data.res.length; x++){
+				var hora = data.res[x]['hora_ini'].split(' ');
+				var hora_aux = hora[1].split(':');
+				if (hora_aux[0] > 12){
+					var zon_h = 'pm';
+					var reaux_hora_ini = convertir_formato_not_mil(hora_aux[0]);
+					hora_ini = reaux_hora_ini + ':' + hora_aux[1];
+					hora_ini = hora_ini +zon_h;
+				}else{
+					var zon_h = 'am';
+					hora_ini = hora_aux[0]+':'+hora_aux[1]+zon_h;
+				}
+				var div_change = '<div class="fc-event-inner" id="'+data.res[x]['id_curso']+'" data-toggle="tooltip" title="Titulo: '+ data.res[x]['titulo_curso']+' Apartado por: '+data.res[x]['nombre_apellido']+' Sala: '+data.res[x]['descrip_sala']+'">'+
+												 '	<div onclick="ver_tooltip('+data.res[x]['id_curso']+')"> <a onclick="ver_tooltip('+data.res[x]['id_curso']+')"><i style="color:#4000ff" class="fa fa-search fa-lg"></i></a>&nbsp'+
+												 '		<span class="fc-event-time">'+hora_ini+'&nbsp;</span> ' +
+												 '		<span class="fc-event-title">'+data.res[x]['titulo_curso']+'</span>'+
+												 '	</div><br>'+
+												 '	<div style="position: absolute; bottom: 1px; right: 10px;">'+
+												 '		<a onclick="editar('+data.res[x]['id_curso']+')"><i style="color:green" class="fa fa-edit fa-lg"></i></a>&nbsp;&nbsp;<a onclick="eliminar('+data.res[x]['id_curso']+')"><i style="color:red; " class="fa fa-trash fa-1x"></i></a>'+
+												 '	</div>'+
+												 '</div>';
+				if(type_event == 'edit'){
+					$('#'+data.res[x]['id_curso']).replaceWith( div_change );
+				}else{
+					if(data.res[x]['id_curso']){
+						$('#modi').replaceWith( div_change );
+					}else{
+						$('#'+data.res[x]['id_curso']).replaceWith( div_change );
+					}
+				}
+
+			}
+
+		},'json');
+	}
+
+	var sale_modif_edit = function(id){
+		$('#salaEvento').val($('#salaEventoEdit').val());
+		$('#edit_sala_efectiv').val(1);
+	}
+
+	var valid_form = function(){
+		var selection = document.querySelectorAll('div#myModal div[class="form-group"] input, textarea, select:not(#salaEventoEdit):not(#salaEvento_re)');
+		var resp = true;
+		for(i=0;i<selection.length;i++){
+			if(selection[i].className == 'form-control'){
+				if(selection[i].value == ''){
+					selection[i].parentElement.className += " has-error";
+					resp = false;
+				}
+			}else{
+				continue;
+			}
+		}
+
+		return resp;
+	}
 </script>
 <script type="text/javascript">
 	/*para el combo de hora */
@@ -728,7 +829,9 @@
 			});
 
 			$('#datetimepicker4').datetimepicker({
-				 format: 'DD/MM/YYYY hh:mm'
+				 format: 'DD/MM/YYYY hh:mm',
+				 //language: 'es'
+
 			});
 			$('#datetimepicker4_2').datetimepicker({
 				 format: 'DD/MM/YYYY hh:mm'
@@ -957,6 +1060,7 @@ function validar_horas(hora_ini,hora_fin){
 <div class="row row-space-10">
 	<div style="color:#a29d9d; margin-left: 1014px; margin-top: 20.8px;">
 		 <h4><strong id="txtDate"></strong></h4>
+		 <input type="hidden" id="edit_sala_efectiv" value="0"/>
 	</div>
 	<div style="margin-left: 76px; margin-top: 46.8px;">
 		<h1>BIENVENIDO</h1><p><b><strong id="nombre_usuario"></strong></b></p>
@@ -1014,8 +1118,11 @@ function validar_horas(hora_ini,hora_fin){
 					 </select>
 				 </div>
 				 <div class="col-sm-3">
-					 <label for="salaEvento">Nombre Sala:</label>
-					 <select id="salaEvento" class="form-control"></select>
+					 <label for="salaEvento">Nombre Sala:</label></br>
+					 <span id="salaEvento_span"></span>
+					 <input type="hidden" id="salaEvento" name="salaEvento" />
+					 <select style="display:none" id="salaEventoEdit" onchange="sale_modif_edit(this.value)" class="form-control"></select>
+					 <!--<select id="salaEvento" class="form-control"></select>-->
 				 </div>
 				 <div class='col-sm-3'>
 					 <div class="form-group">
@@ -1129,11 +1236,11 @@ function validar_horas(hora_ini,hora_fin){
 							 </br>
 							 <div class="form-group">
 								 <div class="col-sm-3">
-									 <label for="tipoEvento">Tipo de Evento:</label>
+									 <label for="tipoEvento">Tipo de Evento:</label></br>
 									 <span id="tipoEvento_tooltip"></span>
 								 </div>
 								 <div class="col-sm-3">
-									 <label for="salaEvento_re_tooltip">Nombre Sala:</label>
+									 <label for="salaEvento_re_tooltip">Nombre Sala:</label></br>
 									 <span id="salaEvento_re_tooltip"></span>
 								 </div>
 								 <div class='col-sm-3'>

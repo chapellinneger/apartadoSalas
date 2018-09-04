@@ -52,6 +52,7 @@ if($accion==0){
 										$array_insert,
 										';'
 									   );
+		$array_insert['id_evento'] = $resultado;				
 	}else{
 		$array_update = [
 			'titulo_curso' => $titulo,
